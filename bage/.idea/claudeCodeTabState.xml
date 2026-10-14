@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ClaudeCodeTabState">
+    <option name="tabSessions">
+      <map>
+        <entry key="0">
+          <value>
+            <TabSessionState>
+              <option name="projectPath" value="E:\Sourcecodedirectory\mianshi\bage" />
+              <option name="provider" value="claude" />
+              <option name="sessionId" value="bd9d85c7-0f40-4518-a501-18cf6668929c" />
+              <option name="cwd" value="E:\Sourcecodedirectory\mianshi\bage" />
+              <option name="model" value="claude-sonnet-5" />
+              <option name="permissionMode" value="default" />
+            </TabSessionState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+</project>
