@@ -1,0 +1,527 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bage.finance.biz.mapper.FileRefMappingMapper">
+  <resultMap id="BaseResultMap" type="com.bage.finance.biz.domain.FileRefMapping">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="file_id" jdbcType="BIGINT" property="fileId" />
+    <result column="ref_id" jdbcType="BIGINT" property="refId" />
+    <result column="ref_type" jdbcType="TINYINT" property="refType" />
+    <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+    <result column="disable" jdbcType="BIT" property="disable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="update_member_id" jdbcType="BIGINT" property="updateMemberId" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, file_id, ref_id, ref_type, tenant_id, disable, create_time, update_time, member_id, 
+    update_member_id, del_flag
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from file_ref_mapping
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from file_ref_mapping
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.bage.finance.biz.domain.FileRefMapping">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into file_ref_mapping (file_id, ref_id, ref_type, 
+      tenant_id, disable, create_time, 
+      update_time, member_id, update_member_id, 
+      del_flag)
+    values (#{fileId,jdbcType=BIGINT}, #{refId,jdbcType=BIGINT}, #{refType,jdbcType=TINYINT}, 
+      #{tenantId,jdbcType=BIGINT}, #{disable,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{updateTime,jdbcType=TIMESTAMP}, #{memberId,jdbcType=BIGINT}, #{updateMemberId,jdbcType=BIGINT}, 
+      #{delFlag,jdbcType=BIT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bage.finance.biz.domain.FileRefMapping">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into file_ref_mapping
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="fileId != null">
+        file_id,
+      </if>
+      <if test="refId != null">
+        ref_id,
+      </if>
+      <if test="refType != null">
+        ref_type,
+      </if>
+      <if test="tenantId != null">
+        tenant_id,
+      </if>
+      <if test="disable != null">
+        disable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="fileId != null">
+        #{fileId,jdbcType=BIGINT},
+      </if>
+      <if test="refId != null">
+        #{refId,jdbcType=BIGINT},
+      </if>
+      <if test="refType != null">
+        #{refType,jdbcType=TINYINT},
+      </if>
+      <if test="tenantId != null">
+        #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="disable != null">
+        #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BIT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bage.finance.biz.domain.FileRefMapping">
+    update file_ref_mapping
+    <set>
+      <if test="fileId != null">
+        file_id = #{fileId,jdbcType=BIGINT},
+      </if>
+      <if test="refId != null">
+        ref_id = #{refId,jdbcType=BIGINT},
+      </if>
+      <if test="refType != null">
+        ref_type = #{refType,jdbcType=TINYINT},
+      </if>
+      <if test="tenantId != null">
+        tenant_id = #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="disable != null">
+        disable = #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BIT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bage.finance.biz.domain.FileRefMapping">
+    update file_ref_mapping
+    set file_id = #{fileId,jdbcType=BIGINT},
+      ref_id = #{refId,jdbcType=BIGINT},
+      ref_type = #{refType,jdbcType=TINYINT},
+      tenant_id = #{tenantId,jdbcType=BIGINT},
+      disable = #{disable,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      member_id = #{memberId,jdbcType=BIGINT},
+      update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="list" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+        <include refid="listSql"/>
+    </select>
+    <sql id="listSql">
+        select
+        <if test="selectBuilder == null">
+            *
+        </if>
+        <if test="selectBuilder != null">
+            <trim prefixOverrides="," suffixOverrides=",">
+                ${selectBuilder}
+            </trim>
+        </if>
+        from file_ref_mapping
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="groupBySql != null">
+            group by ${groupBySql}
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null">
+            <if test="offset != null">
+                limit ${offset}, ${rows}
+            </if>
+            <if test="offset == null">
+                limit ${rows}
+            </if>
+        </if>
+    </sql>
+  <sql id="Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="oredCriteria" item="criteria">
+                    <if test="criteria.valid">
+                        <if test="criteria.andOrOr">
+                            and
+                        </if>
+                        <if test="!criteria.andOrOr">
+                            or
+                        </if>
+                        <trim prefix="(" prefixOverrides="and | or" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+    <select id="topOne" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from file_ref_mapping
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+
+  <select id="count" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultType="java.lang.Integer">
+        <include refid="countSql"/>
+    </select>
+    <sql id="countSql">
+        select count(*) total_count from file_ref_mapping
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </sql>
+  <update id="updateField" parameterType="com.bage.mybatis.help.MyBatisWrapper">
+    update file_ref_mapping 
+    set 
+    <trim prefixOverrides="," suffixOverrides=",">
+         ${example.updateSql} 
+      </trim>
+     <if test="example.updateSql != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <sql id="Update_By_Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="example.oredCriteria" item="criteria">
+                    <if test="criteria.andOrOr">
+                        and
+                    </if>
+                    <if test="!criteria.andOrOr">
+                        or
+                    </if>
+                    <if test="criteria.valid">
+                        <trim prefix="(" prefixOverrides="and" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+   <update id="updateFieldBatch" parameterType="java.util.List">
+           <foreach collection="list" index="index" item="example" separator=";">
+               update file_ref_mapping 
+                   set 
+               <trim prefixOverrides="," suffixOverrides=",">
+                   ${example.updateSql} 
+               </trim>
+               <if test="example != null">
+                   <include refid="Update_By_Example_Where_Clause" />
+               </if>           </foreach>
+  </update>
+    <select id="get" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from file_ref_mapping
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    update file_ref_mapping
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.id != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.id,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="file_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.fileId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.fileId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="ref_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.refId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.refId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="ref_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.refType != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.refType,jdbcType=TINYINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="tenant_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.tenantId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.tenantId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="disable = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.disable != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.disable,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.memberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.memberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateMemberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateMemberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="del_flag = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.delFlag != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.delFlag,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+  where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+</update>
+
+  <insert id="insertBatch" keyColumn="id" keyProperty="id" parameterType="java.util.Collection" useGeneratedKeys="true">
+    insert into file_ref_mapping (file_id, ref_id, ref_type, tenant_id, disable, create_time, update_time, member_id, update_member_id, del_flag) values
+    <foreach collection="list" index="index" item="item" separator=",">
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        #{item.fileId, jdbcType=BIGINT},
+        #{item.refId, jdbcType=BIGINT},
+        #{item.refType, jdbcType=TINYINT},
+        #{item.tenantId, jdbcType=BIGINT},
+        #{item.disable, jdbcType=BIT},
+        #{item.createTime, jdbcType=TIMESTAMP},
+        #{item.updateTime, jdbcType=TIMESTAMP},
+        #{item.memberId, jdbcType=BIGINT},
+        #{item.updateMemberId, jdbcType=BIGINT},
+        #{item.delFlag, jdbcType=BIT},
+      </trim>
+    </foreach>
+  </insert>
+  <insert id="insertBatchSelective" keyColumn="id" parameterType="java.util.List">
+    <foreach collection="list" index="index" item="item" separator=";">
+      insert into file_ref_mapping 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.fileId != null">
+          file_id,
+        </if>
+        <if test="item.refId != null">
+          ref_id,
+        </if>
+        <if test="item.refType != null">
+          ref_type,
+        </if>
+        <if test="item.tenantId != null">
+          tenant_id,
+        </if>
+        <if test="item.disable != null">
+          disable,
+        </if>
+        <if test="item.createTime != null">
+          create_time,
+        </if>
+        <if test="item.updateTime != null">
+          update_time,
+        </if>
+        <if test="item.memberId != null">
+          member_id,
+        </if>
+        <if test="item.updateMemberId != null">
+          update_member_id,
+        </if>
+        <if test="item.delFlag != null">
+          del_flag,
+        </if>
+      </trim>
+       values 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.fileId != null">
+          #{item.fileId, jdbcType=BIGINT},
+        </if>
+        <if test="item.refId != null">
+          #{item.refId, jdbcType=BIGINT},
+        </if>
+        <if test="item.refType != null">
+          #{item.refType, jdbcType=TINYINT},
+        </if>
+        <if test="item.tenantId != null">
+          #{item.tenantId, jdbcType=BIGINT},
+        </if>
+        <if test="item.disable != null">
+          #{item.disable, jdbcType=BIT},
+        </if>
+        <if test="item.createTime != null">
+          #{item.createTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.updateTime != null">
+          #{item.updateTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.memberId != null">
+          #{item.memberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.updateMemberId != null">
+          #{item.updateMemberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.delFlag != null">
+          #{item.delFlag, jdbcType=BIT},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+</mapper>

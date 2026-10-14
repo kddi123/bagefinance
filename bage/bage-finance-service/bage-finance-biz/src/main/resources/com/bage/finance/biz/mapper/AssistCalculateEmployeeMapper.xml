@@ -1,0 +1,721 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bage.finance.biz.mapper.AssistCalculateEmployeeMapper">
+  <resultMap id="BaseResultMap" type="com.bage.finance.biz.domain.AssistCalculateEmployee">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="sex" jdbcType="TINYINT" property="sex" />
+    <result column="department_code" jdbcType="VARCHAR" property="departmentCode" />
+    <result column="department_name" jdbcType="VARCHAR" property="departmentName" />
+    <result column="position" jdbcType="VARCHAR" property="position" />
+    <result column="job" jdbcType="VARCHAR" property="job" />
+    <result column="phone" jdbcType="VARCHAR" property="phone" />
+    <result column="birthday" jdbcType="TIMESTAMP" property="birthday" />
+    <result column="start_date" jdbcType="TIMESTAMP" property="startDate" />
+    <result column="departure_date" jdbcType="TIMESTAMP" property="departureDate" />
+    <result column="disable" jdbcType="BIT" property="disable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="update_member_id" jdbcType="BIGINT" property="updateMemberId" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+    <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+    <result column="assist_calculate_summary_id" jdbcType="BIGINT" property="assistCalculateSummaryId" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, sex, department_code, department_name, position, job, phone, birthday, start_date, 
+    departure_date, disable, create_time, update_time, member_id, update_member_id, del_flag, 
+    tenant_id, assist_calculate_summary_id
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from assist_calculate_employee
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from assist_calculate_employee
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.bage.finance.biz.domain.AssistCalculateEmployee">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into assist_calculate_employee (sex, department_code, department_name, 
+      position, job, phone, 
+      birthday, start_date, departure_date, 
+      disable, create_time, update_time, 
+      member_id, update_member_id, del_flag, 
+      tenant_id, assist_calculate_summary_id)
+    values (#{sex,jdbcType=TINYINT}, #{departmentCode,jdbcType=VARCHAR}, #{departmentName,jdbcType=VARCHAR}, 
+      #{position,jdbcType=VARCHAR}, #{job,jdbcType=VARCHAR}, #{phone,jdbcType=VARCHAR}, 
+      #{birthday,jdbcType=TIMESTAMP}, #{startDate,jdbcType=TIMESTAMP}, #{departureDate,jdbcType=TIMESTAMP}, 
+      #{disable,jdbcType=BIT}, #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{memberId,jdbcType=BIGINT}, #{updateMemberId,jdbcType=BIGINT}, #{delFlag,jdbcType=BIT}, 
+      #{tenantId,jdbcType=BIGINT}, #{assistCalculateSummaryId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bage.finance.biz.domain.AssistCalculateEmployee">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into assist_calculate_employee
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="sex != null">
+        sex,
+      </if>
+      <if test="departmentCode != null">
+        department_code,
+      </if>
+      <if test="departmentName != null">
+        department_name,
+      </if>
+      <if test="position != null">
+        position,
+      </if>
+      <if test="job != null">
+        job,
+      </if>
+      <if test="phone != null">
+        phone,
+      </if>
+      <if test="birthday != null">
+        birthday,
+      </if>
+      <if test="startDate != null">
+        start_date,
+      </if>
+      <if test="departureDate != null">
+        departure_date,
+      </if>
+      <if test="disable != null">
+        disable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="tenantId != null">
+        tenant_id,
+      </if>
+      <if test="assistCalculateSummaryId != null">
+        assist_calculate_summary_id,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="sex != null">
+        #{sex,jdbcType=TINYINT},
+      </if>
+      <if test="departmentCode != null">
+        #{departmentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null">
+        #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="job != null">
+        #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null">
+        #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureDate != null">
+        #{departureDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="disable != null">
+        #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="tenantId != null">
+        #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="assistCalculateSummaryId != null">
+        #{assistCalculateSummaryId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bage.finance.biz.domain.AssistCalculateEmployee">
+    update assist_calculate_employee
+    <set>
+      <if test="sex != null">
+        sex = #{sex,jdbcType=TINYINT},
+      </if>
+      <if test="departmentCode != null">
+        department_code = #{departmentCode,jdbcType=VARCHAR},
+      </if>
+      <if test="departmentName != null">
+        department_name = #{departmentName,jdbcType=VARCHAR},
+      </if>
+      <if test="position != null">
+        position = #{position,jdbcType=VARCHAR},
+      </if>
+      <if test="job != null">
+        job = #{job,jdbcType=VARCHAR},
+      </if>
+      <if test="phone != null">
+        phone = #{phone,jdbcType=VARCHAR},
+      </if>
+      <if test="birthday != null">
+        birthday = #{birthday,jdbcType=TIMESTAMP},
+      </if>
+      <if test="startDate != null">
+        start_date = #{startDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="departureDate != null">
+        departure_date = #{departureDate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="disable != null">
+        disable = #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="tenantId != null">
+        tenant_id = #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="assistCalculateSummaryId != null">
+        assist_calculate_summary_id = #{assistCalculateSummaryId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bage.finance.biz.domain.AssistCalculateEmployee">
+    update assist_calculate_employee
+    set sex = #{sex,jdbcType=TINYINT},
+      department_code = #{departmentCode,jdbcType=VARCHAR},
+      department_name = #{departmentName,jdbcType=VARCHAR},
+      position = #{position,jdbcType=VARCHAR},
+      job = #{job,jdbcType=VARCHAR},
+      phone = #{phone,jdbcType=VARCHAR},
+      birthday = #{birthday,jdbcType=TIMESTAMP},
+      start_date = #{startDate,jdbcType=TIMESTAMP},
+      departure_date = #{departureDate,jdbcType=TIMESTAMP},
+      disable = #{disable,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      member_id = #{memberId,jdbcType=BIGINT},
+      update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=BIT},
+      tenant_id = #{tenantId,jdbcType=BIGINT},
+      assist_calculate_summary_id = #{assistCalculateSummaryId,jdbcType=BIGINT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="list" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+        <include refid="listSql"/>
+    </select>
+    <sql id="listSql">
+        select
+        <if test="selectBuilder == null">
+            *
+        </if>
+        <if test="selectBuilder != null">
+            <trim prefixOverrides="," suffixOverrides=",">
+                ${selectBuilder}
+            </trim>
+        </if>
+        from assist_calculate_employee
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="groupBySql != null">
+            group by ${groupBySql}
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null">
+            <if test="offset != null">
+                limit ${offset}, ${rows}
+            </if>
+            <if test="offset == null">
+                limit ${rows}
+            </if>
+        </if>
+    </sql>
+  <sql id="Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="oredCriteria" item="criteria">
+                    <if test="criteria.valid">
+                        <if test="criteria.andOrOr">
+                            and
+                        </if>
+                        <if test="!criteria.andOrOr">
+                            or
+                        </if>
+                        <trim prefix="(" prefixOverrides="and | or" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+    <select id="topOne" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from assist_calculate_employee
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+
+  <select id="count" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultType="java.lang.Integer">
+        <include refid="countSql"/>
+    </select>
+    <sql id="countSql">
+        select count(*) total_count from assist_calculate_employee
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </sql>
+  <update id="updateField" parameterType="com.bage.mybatis.help.MyBatisWrapper">
+    update assist_calculate_employee 
+    set 
+    <trim prefixOverrides="," suffixOverrides=",">
+         ${example.updateSql} 
+      </trim>
+     <if test="example.updateSql != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <sql id="Update_By_Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="example.oredCriteria" item="criteria">
+                    <if test="criteria.andOrOr">
+                        and
+                    </if>
+                    <if test="!criteria.andOrOr">
+                        or
+                    </if>
+                    <if test="criteria.valid">
+                        <trim prefix="(" prefixOverrides="and" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+   <update id="updateFieldBatch" parameterType="java.util.List">
+           <foreach collection="list" index="index" item="example" separator=";">
+               update assist_calculate_employee 
+                   set 
+               <trim prefixOverrides="," suffixOverrides=",">
+                   ${example.updateSql} 
+               </trim>
+               <if test="example != null">
+                   <include refid="Update_By_Example_Where_Clause" />
+               </if>           </foreach>
+  </update>
+    <select id="get" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from assist_calculate_employee
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    update assist_calculate_employee
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.id != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.id,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="sex = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.sex != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.sex,jdbcType=TINYINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="department_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.departmentCode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.departmentCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="department_name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.departmentName != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.departmentName,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="position = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.position != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.position,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="job = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.job != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.job,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="phone = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.phone != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.phone,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="birthday = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.birthday != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.birthday,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="start_date = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.startDate != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.startDate,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="departure_date = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.departureDate != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.departureDate,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="disable = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.disable != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.disable,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.memberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.memberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateMemberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateMemberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="del_flag = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.delFlag != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.delFlag,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="tenant_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.tenantId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.tenantId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="assist_calculate_summary_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.assistCalculateSummaryId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.assistCalculateSummaryId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+  where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+</update>
+
+  <insert id="insertBatch" keyColumn="id" keyProperty="id" parameterType="java.util.Collection" useGeneratedKeys="true">
+    insert into assist_calculate_employee (sex, department_code, department_name, position, job, phone, birthday, start_date, departure_date, disable, create_time, update_time, member_id, update_member_id, del_flag, tenant_id, assist_calculate_summary_id) values
+    <foreach collection="list" index="index" item="item" separator=",">
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        #{item.sex, jdbcType=TINYINT},
+        #{item.departmentCode, jdbcType=VARCHAR},
+        #{item.departmentName, jdbcType=VARCHAR},
+        #{item.position, jdbcType=VARCHAR},
+        #{item.job, jdbcType=VARCHAR},
+        #{item.phone, jdbcType=VARCHAR},
+        #{item.birthday, jdbcType=TIMESTAMP},
+        #{item.startDate, jdbcType=TIMESTAMP},
+        #{item.departureDate, jdbcType=TIMESTAMP},
+        #{item.disable, jdbcType=BIT},
+        #{item.createTime, jdbcType=TIMESTAMP},
+        #{item.updateTime, jdbcType=TIMESTAMP},
+        #{item.memberId, jdbcType=BIGINT},
+        #{item.updateMemberId, jdbcType=BIGINT},
+        #{item.delFlag, jdbcType=BIT},
+        #{item.tenantId, jdbcType=BIGINT},
+        #{item.assistCalculateSummaryId, jdbcType=BIGINT},
+      </trim>
+    </foreach>
+  </insert>
+  <insert id="insertBatchSelective" keyColumn="id" parameterType="java.util.List">
+    <foreach collection="list" index="index" item="item" separator=";">
+      insert into assist_calculate_employee 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.sex != null">
+          sex,
+        </if>
+        <if test="item.departmentCode != null">
+          department_code,
+        </if>
+        <if test="item.departmentName != null">
+          department_name,
+        </if>
+        <if test="item.position != null">
+          position,
+        </if>
+        <if test="item.job != null">
+          job,
+        </if>
+        <if test="item.phone != null">
+          phone,
+        </if>
+        <if test="item.birthday != null">
+          birthday,
+        </if>
+        <if test="item.startDate != null">
+          start_date,
+        </if>
+        <if test="item.departureDate != null">
+          departure_date,
+        </if>
+        <if test="item.disable != null">
+          disable,
+        </if>
+        <if test="item.createTime != null">
+          create_time,
+        </if>
+        <if test="item.updateTime != null">
+          update_time,
+        </if>
+        <if test="item.memberId != null">
+          member_id,
+        </if>
+        <if test="item.updateMemberId != null">
+          update_member_id,
+        </if>
+        <if test="item.delFlag != null">
+          del_flag,
+        </if>
+        <if test="item.tenantId != null">
+          tenant_id,
+        </if>
+        <if test="item.assistCalculateSummaryId != null">
+          assist_calculate_summary_id,
+        </if>
+      </trim>
+       values 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.sex != null">
+          #{item.sex, jdbcType=TINYINT},
+        </if>
+        <if test="item.departmentCode != null">
+          #{item.departmentCode, jdbcType=VARCHAR},
+        </if>
+        <if test="item.departmentName != null">
+          #{item.departmentName, jdbcType=VARCHAR},
+        </if>
+        <if test="item.position != null">
+          #{item.position, jdbcType=VARCHAR},
+        </if>
+        <if test="item.job != null">
+          #{item.job, jdbcType=VARCHAR},
+        </if>
+        <if test="item.phone != null">
+          #{item.phone, jdbcType=VARCHAR},
+        </if>
+        <if test="item.birthday != null">
+          #{item.birthday, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.startDate != null">
+          #{item.startDate, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.departureDate != null">
+          #{item.departureDate, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.disable != null">
+          #{item.disable, jdbcType=BIT},
+        </if>
+        <if test="item.createTime != null">
+          #{item.createTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.updateTime != null">
+          #{item.updateTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.memberId != null">
+          #{item.memberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.updateMemberId != null">
+          #{item.updateMemberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.delFlag != null">
+          #{item.delFlag, jdbcType=BIT},
+        </if>
+        <if test="item.tenantId != null">
+          #{item.tenantId, jdbcType=BIGINT},
+        </if>
+        <if test="item.assistCalculateSummaryId != null">
+          #{item.assistCalculateSummaryId, jdbcType=BIGINT},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+</mapper>

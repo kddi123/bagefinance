@@ -1,0 +1,291 @@
+.ant-table-wrapper.voucher .ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table>thead>tr>th {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.pz_title {
+    height: 34px;
+    line-height: 34px;
+}
+
+.custom-border {
+
+    border: 0;
+    /* 设置边框样式，可以根据需求调整颜色和宽度 */
+    // padding: 4px;
+    /* 可选：设置内边距 */
+    // position: absolute;
+    text-align: left;
+    vertical-align: middle;
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-top: 0;
+    display: inline-flex;
+    font-size: 12px;
+    outline: none;
+    // width: 90%;
+    height: 100%;
+}
+
+.custom-border.th,
+.custom-border.th span {
+    line-height: 25px;
+    height: 25px;
+    font-weight: normal;
+    width: 100%;
+}
+
+.custom-border.td,
+.custom-border.td span {
+    // line-height: 100%;
+    height: 100%;
+    width: 100%;
+    font-weight: bold;
+    font-size: 20px;
+    vertical-align: middle;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.voucher .ant-table-cell {
+    margin: 0;
+    padding: 0;
+}
+
+.voucher td.ant-table-cell {
+    // line-height: 100px;
+    height: 100px;
+}
+
+.custom-border span:first {
+    padding-left: 0px;
+}
+
+.custom-border span {
+    border-right: 1px solid #e2e2e2;
+    display: flex;
+    width: 20px;
+    text-align: center;
+    display: block;
+}
+
+.custom-border span.b,
+.custom-border span.q {
+    border-right: 1px solid #bde3f7;
+
+}
+
+.custom-border span.y {
+    border-right: 1px solid #f2cbca;
+}
+
+.custom-border span:last-child {
+    border-right: 0;
+}
+
+.custom-border-child {
+    border: 1px solid #ddd;
+    /* 设置子元素的边框样式，可以根据需求调整颜色和宽度 */
+    margin: 2px;
+    /* 可选：设置子元素之间的间距 */
+}
+
+
+.ant-table-wrapper.voucher .ant-table.ant-table-bordered>.ant-table-container>.ant-table-content>table>tbody>tr>td {
+    text-align: center;
+    margin: 0;
+    padding: 0;
+}
+
+.zy,
+.km {
+    word-wrap: break-word;
+    /* 允许单词内换行 */
+    overflow-wrap: break-word;
+    /* 适配新标准，允许单词内换行 */
+    white-space: normal;
+    /* 设置为 normal 以允许自动换行 */
+    text-align: left;
+    vertical-align: top;
+    // top: 0px;
+    // left: 0px;
+    // right: 0px;
+    width: 100%;
+    height: 100%;
+    text-overflow: ellipsis;
+    /* 显示省略号 */
+    // position: absolute;
+
+    color: var(--font-color);
+    line-height: 20px;
+    font-size: 14px;
+    font-weight: 700;
+    // padding-left: 5px;
+    word-break: break-all;
+    text-align: left;
+    max-height: 100%;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+}
+
+.editing {
+    border: 2px solid #44b449;
+    height: 100%;
+}
+
+.zy.show {
+    padding: 5px;
+    height: 90px;
+    // height: 100%;
+}
+
+.km.show {
+    padding: 5px;
+    // height: 100px;
+    // width: 404px;
+    width: 100%;
+    height: 100%;
+}
+
+.km_content {
+    max-height: 60px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    // display: flex;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    margin-bottom: 3px;
+}
+
+.zy textarea {
+    height: 100%;
+    font-weight: bold;
+    border: 0;
+    resize: none;
+}
+
+.km textarea {
+    border: 0;
+    font-weight: bold;
+    resize: none;
+    margin-bottom: 3px;
+}
+
+.jfje input,
+.jfje .ant-input-number,
+.jfje .ant-input-number-input-wrap {
+    height: 100%;
+    width: 100%;
+}
+
+.jfje input {
+    height: 100%;
+    width: 100%;
+    border: 0;
+    font-weight: bold;
+}
+
+.dfje input,
+.dfje .ant-input-number,
+.dfje .ant-input-number-input-wrap {
+    height: 100%;
+    width: 100%;
+}
+
+.dfje input {
+    width: 100%;
+    height: 100%;
+    border: 0;
+    font-weight: bold;
+}
+
+.heji {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding-left: 24px;
+    font-weight: 600;
+    font-size: var(--font-size);
+    color: var(--font-color);
+    line-height: 20px;
+}
+
+.km_select_panel {
+    position: absolute;
+    bottom: -350px;
+    // top: 100px;
+    left: 0px;
+    width: 405px;
+    height: 200px;
+    z-index: 9;
+    background-color: white;
+
+    height: 350px;
+    overflow: 'auto';
+    padding: '0 16px';
+    border: 1px solid rgba(140, 140, 140, 0.35);
+    outline: 1px solid rgba(140, 140, 140, 0.35);
+}
+
+/* 样式表 */
+.voucher .ant-list-item {
+    height: 30px;
+    display: flex;
+    /* 使用弹性布局 */
+    align-items: center;
+    padding-left: 5px;
+    font-weight: normal;
+    /* 垂直居中 */
+}
+
+.voucher .ant-list-item:hover,
+.voucher .ant-list-item.active {
+    background-color: #44b449;
+    color: white;
+    /* 设置鼠标悬停时的背景色 */
+}
+
+.voucher .ant-tabs-top>.ant-tabs-nav {
+    margin: 0;
+    margin-left: 5px;
+}
+
+.voucher .ant-input-number .ant-input-number-input {
+    border: 0;
+    border: none;
+    border-radius: 0;
+    text-align: center;
+}
+
+.voucher .ant-input-number {
+    border: 0;
+    border-radius: 0;
+}
+
+.ye {
+    position: absolute;
+    bottom: 0px;
+    left: 5px;
+    font-weight: 700;
+    font-size: 12px;
+}
+
+.km_right {
+    position: absolute;
+    right: 5px;
+    bottom: 20px;
+    font-size: 12px;
+    font-weight: normal;
+    text-align: right;
+}
+
+.voucher .editing .ant-input:focus-within:not(.km_right .ant-input:focus-within) {
+    border: none;
+    box-shadow: none;
+}

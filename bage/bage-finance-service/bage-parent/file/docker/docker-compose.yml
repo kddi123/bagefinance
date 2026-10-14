@@ -1,0 +1,101 @@
+version: '3'
+
+services:
+
+  nginx:
+    container_name: nginx
+    image: nginx:latest
+    ports:
+      - 80:80
+      - 443:443
+    volumes:
+      - /tmp/:/tmp/
+      - ./config/nginx/conf.d/:/etc/nginx/conf.d/
+      - ./config/nginx/ssl/test/:/etc/nginx/ssl/
+      - ./log/nginx/:/var/log/nginx/
+      - ./www/:/var/www/html/
+      - /etc/localtime:/etc/localtime
+      - ./config/etc/timezone:/etc/timezone
+    links:
+      - mysass-finance-admin-api
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 256M
+  #        reservations:
+  #          cpus: '0.5'
+  #          memory: 200M
+
+  redis:
+    container_name: redis
+    image: redis:6
+    ports:
+      - 6379:6379
+    volumes:
+      - /tmp/:/tmp/
+      - ./config/redis/:/usr/local/etc/redis/
+      - ./log/redis/:/var/log/redis/
+      - ./data/redis/:/data/
+      - /etc/localtime:/etc/localtime
+      - ./config/etc/timezone:/etc/timezone
+    command: /bin/bash -c "redis-server /usr/local/etc/redis/redis.conf"
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 128M
+
+  mysql:
+    container_name: mysql
+    image: mysql:8
+    ports:
+      - 3306:3306
+    volumes:
+      - /tmp/:/tmp/
+      - ./config/mysql/conf.d/app.cnf:/etc/mysql/conf.d/app.cnf
+      - ./log/mysql/:/var/log/mysql/
+      - ./data/mysql/:/var/lib/mysql/
+      - /etc/localtime:/etc/localtime
+      - ./config/etc/timezone:/etc/timezone
+    environment:
+      MYSQL_ROOT_PASSWORD: f4a236337a75bec6
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 768M
+
+  mysass-finance-admin-api:
+    # 指定容器名称
+    container_name: mysass-finance-admin-api
+    # 重启机制
+    restart: always
+    image: openjdk:8u322-oraclelinux7
+    links:
+      - redis
+      - mysql
+    volumes:
+      # 本地jar包路径
+      - ./application/mysass-finance-admin-api.jar:/mysass-finance-admin-api.jar
+      # 挂载日志 -v A:B ,A指宿主机位置，B指容器位置
+      - ./log/mysass-finance-admin-api:/mysass-finance-admin-api/logs
+      # 指定容器时间为宿主机时间
+      - /etc/localtime:/etc/localtime
+      - ./config/etc/timezone:/etc/timezone
+    # 访问端口
+    ports:
+      - 8091:8091
+    environment:
+      # 指定时区
+      - TZ="Asia/Shanghai"
+    #启动容器后执行的命令
+    entrypoint: java -server -Xms256m -Xmx256m -jar -Dserver.port=8091 -Dspring.profiles.active=test -Dfile.encoding=utf-8 mysass-finance-admin-api.jar
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 512M

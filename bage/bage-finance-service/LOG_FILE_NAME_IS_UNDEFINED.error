@@ -1,0 +1,15 @@
+2026-10-11 20:49:03.068 [main] ERROR o.s.b.d.LoggingFailureAnalysisReporter - 
+
+***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+Parameter 0 of constructor in com.bage.finance.admin.api.config.WebServerInitConfig required a bean of type 'com.bage.common.netty.NettyServerHelper' that could not be found.
+
+
+Action:
+
+Consider defining a bean of type 'com.bage.common.netty.NettyServerHelper' in your configuration.
+

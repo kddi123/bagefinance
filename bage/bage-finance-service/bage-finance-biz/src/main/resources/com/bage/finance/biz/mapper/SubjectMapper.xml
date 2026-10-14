@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.bage.finance.biz.mapper.SubjectMapper">
+  <resultMap id="BaseResultMap" type="com.bage.finance.biz.domain.Subject">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="pid" jdbcType="BIGINT" property="pid" />
+    <result column="code" jdbcType="VARCHAR" property="code" />
+    <result column="sort" jdbcType="INTEGER" property="sort" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="mnemonic_code" jdbcType="VARCHAR" property="mnemonicCode" />
+    <result column="balance_direction" jdbcType="TINYINT" property="balanceDirection" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="tenant_id" jdbcType="BIGINT" property="tenantId" />
+    <result column="disable" jdbcType="BIT" property="disable" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="member_id" jdbcType="BIGINT" property="memberId" />
+    <result column="update_member_id" jdbcType="BIGINT" property="updateMemberId" />
+    <result column="del_flag" jdbcType="BIT" property="delFlag" />
+    <result column="subject_cate" jdbcType="INTEGER" property="subjectCate" />
+    <result column="node_depth" jdbcType="INTEGER" property="nodeDepth" />
+    <result column="depth_code_length_one" jdbcType="INTEGER" property="depthCodeLengthOne" />
+    <result column="depth_code_length_two" jdbcType="INTEGER" property="depthCodeLengthTwo" />
+    <result column="depth_code_length_three" jdbcType="INTEGER" property="depthCodeLengthThree" />
+    <result column="depth_code_length_four" jdbcType="INTEGER" property="depthCodeLengthFour" />
+    <result column="subject_type" jdbcType="TINYINT" property="subjectType" />
+    <result column="use_count" jdbcType="INTEGER" property="useCount" />
+    <result column="parent_subject_disable" jdbcType="BIT" property="parentSubjectDisable" />
+    <result column="pid_path" jdbcType="VARCHAR" property="pidPath" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="com.bage.finance.biz.domain.Subject">
+    <result column="calculate_config" jdbcType="LONGVARCHAR" property="calculateConfig" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, pid, code, sort, name, mnemonic_code, balance_direction, level, tenant_id, disable, 
+    create_time, update_time, member_id, update_member_id, del_flag, subject_cate, node_depth, 
+    depth_code_length_one, depth_code_length_two, depth_code_length_three, depth_code_length_four, 
+    subject_type, use_count, parent_subject_disable, pid_path
+  </sql>
+  <sql id="Blob_Column_List">
+    calculate_config
+  </sql>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from subject
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from subject
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.bage.finance.biz.domain.Subject">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into subject (pid, code, sort, 
+      name, mnemonic_code, balance_direction, 
+      level, tenant_id, disable, 
+      create_time, update_time, member_id, 
+      update_member_id, del_flag, subject_cate, 
+      node_depth, depth_code_length_one, depth_code_length_two, 
+      depth_code_length_three, depth_code_length_four, 
+      subject_type, use_count, parent_subject_disable, 
+      pid_path, calculate_config)
+    values (#{pid,jdbcType=BIGINT}, #{code,jdbcType=VARCHAR}, #{sort,jdbcType=INTEGER}, 
+      #{name,jdbcType=VARCHAR}, #{mnemonicCode,jdbcType=VARCHAR}, #{balanceDirection,jdbcType=TINYINT}, 
+      #{level,jdbcType=INTEGER}, #{tenantId,jdbcType=BIGINT}, #{disable,jdbcType=BIT}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateTime,jdbcType=TIMESTAMP}, #{memberId,jdbcType=BIGINT}, 
+      #{updateMemberId,jdbcType=BIGINT}, #{delFlag,jdbcType=BIT}, #{subjectCate,jdbcType=INTEGER}, 
+      #{nodeDepth,jdbcType=INTEGER}, #{depthCodeLengthOne,jdbcType=INTEGER}, #{depthCodeLengthTwo,jdbcType=INTEGER}, 
+      #{depthCodeLengthThree,jdbcType=INTEGER}, #{depthCodeLengthFour,jdbcType=INTEGER}, 
+      #{subjectType,jdbcType=TINYINT}, #{useCount,jdbcType=INTEGER}, #{parentSubjectDisable,jdbcType=BIT}, 
+      #{pidPath,jdbcType=VARCHAR}, #{calculateConfig,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="com.bage.finance.biz.domain.Subject">
+    <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
+      SELECT LAST_INSERT_ID()
+    </selectKey>
+    insert into subject
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="code != null">
+        code,
+      </if>
+      <if test="sort != null">
+        sort,
+      </if>
+      <if test="name != null">
+        name,
+      </if>
+      <if test="mnemonicCode != null">
+        mnemonic_code,
+      </if>
+      <if test="balanceDirection != null">
+        balance_direction,
+      </if>
+      <if test="level != null">
+        level,
+      </if>
+      <if test="tenantId != null">
+        tenant_id,
+      </if>
+      <if test="disable != null">
+        disable,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="memberId != null">
+        member_id,
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id,
+      </if>
+      <if test="delFlag != null">
+        del_flag,
+      </if>
+      <if test="subjectCate != null">
+        subject_cate,
+      </if>
+      <if test="nodeDepth != null">
+        node_depth,
+      </if>
+      <if test="depthCodeLengthOne != null">
+        depth_code_length_one,
+      </if>
+      <if test="depthCodeLengthTwo != null">
+        depth_code_length_two,
+      </if>
+      <if test="depthCodeLengthThree != null">
+        depth_code_length_three,
+      </if>
+      <if test="depthCodeLengthFour != null">
+        depth_code_length_four,
+      </if>
+      <if test="subjectType != null">
+        subject_type,
+      </if>
+      <if test="useCount != null">
+        use_count,
+      </if>
+      <if test="parentSubjectDisable != null">
+        parent_subject_disable,
+      </if>
+      <if test="pidPath != null">
+        pid_path,
+      </if>
+      <if test="calculateConfig != null">
+        calculate_config,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="pid != null">
+        #{pid,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mnemonicCode != null">
+        #{mnemonicCode,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceDirection != null">
+        #{balanceDirection,jdbcType=TINYINT},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="tenantId != null">
+        #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="disable != null">
+        #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="subjectCate != null">
+        #{subjectCate,jdbcType=INTEGER},
+      </if>
+      <if test="nodeDepth != null">
+        #{nodeDepth,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthOne != null">
+        #{depthCodeLengthOne,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthTwo != null">
+        #{depthCodeLengthTwo,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthThree != null">
+        #{depthCodeLengthThree,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthFour != null">
+        #{depthCodeLengthFour,jdbcType=INTEGER},
+      </if>
+      <if test="subjectType != null">
+        #{subjectType,jdbcType=TINYINT},
+      </if>
+      <if test="useCount != null">
+        #{useCount,jdbcType=INTEGER},
+      </if>
+      <if test="parentSubjectDisable != null">
+        #{parentSubjectDisable,jdbcType=BIT},
+      </if>
+      <if test="pidPath != null">
+        #{pidPath,jdbcType=VARCHAR},
+      </if>
+      <if test="calculateConfig != null">
+        #{calculateConfig,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.bage.finance.biz.domain.Subject">
+    update subject
+    <set>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=BIGINT},
+      </if>
+      <if test="code != null">
+        code = #{code,jdbcType=VARCHAR},
+      </if>
+      <if test="sort != null">
+        sort = #{sort,jdbcType=INTEGER},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="mnemonicCode != null">
+        mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+      </if>
+      <if test="balanceDirection != null">
+        balance_direction = #{balanceDirection,jdbcType=TINYINT},
+      </if>
+      <if test="level != null">
+        level = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="tenantId != null">
+        tenant_id = #{tenantId,jdbcType=BIGINT},
+      </if>
+      <if test="disable != null">
+        disable = #{disable,jdbcType=BIT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="memberId != null">
+        member_id = #{memberId,jdbcType=BIGINT},
+      </if>
+      <if test="updateMemberId != null">
+        update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      </if>
+      <if test="delFlag != null">
+        del_flag = #{delFlag,jdbcType=BIT},
+      </if>
+      <if test="subjectCate != null">
+        subject_cate = #{subjectCate,jdbcType=INTEGER},
+      </if>
+      <if test="nodeDepth != null">
+        node_depth = #{nodeDepth,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthOne != null">
+        depth_code_length_one = #{depthCodeLengthOne,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthTwo != null">
+        depth_code_length_two = #{depthCodeLengthTwo,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthThree != null">
+        depth_code_length_three = #{depthCodeLengthThree,jdbcType=INTEGER},
+      </if>
+      <if test="depthCodeLengthFour != null">
+        depth_code_length_four = #{depthCodeLengthFour,jdbcType=INTEGER},
+      </if>
+      <if test="subjectType != null">
+        subject_type = #{subjectType,jdbcType=TINYINT},
+      </if>
+      <if test="useCount != null">
+        use_count = #{useCount,jdbcType=INTEGER},
+      </if>
+      <if test="parentSubjectDisable != null">
+        parent_subject_disable = #{parentSubjectDisable,jdbcType=BIT},
+      </if>
+      <if test="pidPath != null">
+        pid_path = #{pidPath,jdbcType=VARCHAR},
+      </if>
+      <if test="calculateConfig != null">
+        calculate_config = #{calculateConfig,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="com.bage.finance.biz.domain.Subject">
+    update subject
+    set pid = #{pid,jdbcType=BIGINT},
+      code = #{code,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+      balance_direction = #{balanceDirection,jdbcType=TINYINT},
+      level = #{level,jdbcType=INTEGER},
+      tenant_id = #{tenantId,jdbcType=BIGINT},
+      disable = #{disable,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      member_id = #{memberId,jdbcType=BIGINT},
+      update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=BIT},
+      subject_cate = #{subjectCate,jdbcType=INTEGER},
+      node_depth = #{nodeDepth,jdbcType=INTEGER},
+      depth_code_length_one = #{depthCodeLengthOne,jdbcType=INTEGER},
+      depth_code_length_two = #{depthCodeLengthTwo,jdbcType=INTEGER},
+      depth_code_length_three = #{depthCodeLengthThree,jdbcType=INTEGER},
+      depth_code_length_four = #{depthCodeLengthFour,jdbcType=INTEGER},
+      subject_type = #{subjectType,jdbcType=TINYINT},
+      use_count = #{useCount,jdbcType=INTEGER},
+      parent_subject_disable = #{parentSubjectDisable,jdbcType=BIT},
+      pid_path = #{pidPath,jdbcType=VARCHAR},
+      calculate_config = #{calculateConfig,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.bage.finance.biz.domain.Subject">
+    update subject
+    set pid = #{pid,jdbcType=BIGINT},
+      code = #{code,jdbcType=VARCHAR},
+      sort = #{sort,jdbcType=INTEGER},
+      name = #{name,jdbcType=VARCHAR},
+      mnemonic_code = #{mnemonicCode,jdbcType=VARCHAR},
+      balance_direction = #{balanceDirection,jdbcType=TINYINT},
+      level = #{level,jdbcType=INTEGER},
+      tenant_id = #{tenantId,jdbcType=BIGINT},
+      disable = #{disable,jdbcType=BIT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      member_id = #{memberId,jdbcType=BIGINT},
+      update_member_id = #{updateMemberId,jdbcType=BIGINT},
+      del_flag = #{delFlag,jdbcType=BIT},
+      subject_cate = #{subjectCate,jdbcType=INTEGER},
+      node_depth = #{nodeDepth,jdbcType=INTEGER},
+      depth_code_length_one = #{depthCodeLengthOne,jdbcType=INTEGER},
+      depth_code_length_two = #{depthCodeLengthTwo,jdbcType=INTEGER},
+      depth_code_length_three = #{depthCodeLengthThree,jdbcType=INTEGER},
+      depth_code_length_four = #{depthCodeLengthFour,jdbcType=INTEGER},
+      subject_type = #{subjectType,jdbcType=TINYINT},
+      use_count = #{useCount,jdbcType=INTEGER},
+      parent_subject_disable = #{parentSubjectDisable,jdbcType=BIT},
+      pid_path = #{pidPath,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <select id="list" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+        <include refid="listSql"/>
+    </select>
+    <sql id="listSql">
+        select
+        <if test="selectBuilder == null">
+            *
+        </if>
+        <if test="selectBuilder != null">
+            <trim prefixOverrides="," suffixOverrides=",">
+                ${selectBuilder}
+            </trim>
+        </if>
+        from subject
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+        <if test="groupBySql != null">
+            group by ${groupBySql}
+        </if>
+        <if test="orderByClause != null">
+            order by ${orderByClause}
+        </if>
+        <if test="rows != null">
+            <if test="offset != null">
+                limit ${offset}, ${rows}
+            </if>
+            <if test="offset == null">
+                limit ${rows}
+            </if>
+        </if>
+    </sql>
+  <sql id="Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="oredCriteria" item="criteria">
+                    <if test="criteria.valid">
+                        <if test="criteria.andOrOr">
+                            and
+                        </if>
+                        <if test="!criteria.andOrOr">
+                            or
+                        </if>
+                        <trim prefix="(" prefixOverrides="and | or" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+    <select id="topOne" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from subject
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+    limit 1
+  </select>
+
+  <select id="count" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultType="java.lang.Integer">
+        <include refid="countSql"/>
+    </select>
+    <sql id="countSql">
+        select count(*) total_count from subject
+        <if test="_parameter != null">
+            <include refid="Example_Where_Clause"/>
+        </if>
+    </sql>
+  <update id="updateField" parameterType="com.bage.mybatis.help.MyBatisWrapper">
+    update subject 
+    set 
+    <trim prefixOverrides="," suffixOverrides=",">
+         ${example.updateSql} 
+      </trim>
+     <if test="example.updateSql != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <sql id="Update_By_Example_Where_Clause">
+   <where>
+            <trim prefixOverrides="and | or">
+                <foreach collection="example.oredCriteria" item="criteria">
+                    <if test="criteria.andOrOr">
+                        and
+                    </if>
+                    <if test="!criteria.andOrOr">
+                        or
+                    </if>
+                    <if test="criteria.valid">
+                        <trim prefix="(" prefixOverrides="and" suffix=")">
+                            <foreach collection="criteria.criteria" item="criterion">
+                                <choose>
+                                    <when test="criterion.noValue">
+                                        ${criterion.condition}
+                                    </when>
+                                    <when test="criterion.singleValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.betweenValue">
+                                        ${criterion.condition} #{criterion.value, jdbcType=${criterion.jdbcType}} and #{criterion.secondValue, jdbcType=${criterion.jdbcType}}
+                                    </when>
+                                    <when test="criterion.listValue">
+                                        ${criterion.condition}
+                                        <foreach close=")" collection="criterion.value" item="listItem" open="("
+                                                 separator=",">
+                                            #{listItem, jdbcType=${criterion.jdbcType}}
+                                        </foreach>
+                                    </when>
+                                </choose>
+                            </foreach>
+                        </trim>
+                    </if>
+                </foreach>
+            </trim>
+        </where></sql>
+   <update id="updateFieldBatch" parameterType="java.util.List">
+           <foreach collection="list" index="index" item="example" separator=";">
+               update subject 
+                   set 
+               <trim prefixOverrides="," suffixOverrides=",">
+                   ${example.updateSql} 
+               </trim>
+               <if test="example != null">
+                   <include refid="Update_By_Example_Where_Clause" />
+               </if>           </foreach>
+  </update>
+    <select id="get" parameterType="com.bage.mybatis.help.MyBatisWrapper" resultMap="BaseResultMap">
+    select
+    <if test="selectBuilder != null">
+      <trim prefixOverrides="," suffixOverrides=",">
+         ${selectBuilder} 
+      </trim>
+    </if>
+    from subject
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+
+  <update id="updateBatchSelective" parameterType="java.util.List">
+    update subject
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.id != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.id,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="pid = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.pid != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.pid,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.code != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.code,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="sort = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.sort != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.sort,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="name = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.name != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.name,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="mnemonic_code = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.mnemonicCode != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.mnemonicCode,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="balance_direction = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.balanceDirection != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.balanceDirection,jdbcType=TINYINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="level = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.level != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.level,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="tenant_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.tenantId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.tenantId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="disable = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.disable != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.disable,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="create_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.createTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.createTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_time = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateTime != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateTime,jdbcType=TIMESTAMP}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.memberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.memberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="update_member_id = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.updateMemberId != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.updateMemberId,jdbcType=BIGINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="del_flag = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.delFlag != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.delFlag,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="subject_cate = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.subjectCate != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.subjectCate,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="node_depth = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.nodeDepth != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.nodeDepth,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="depth_code_length_one = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.depthCodeLengthOne != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.depthCodeLengthOne,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="depth_code_length_two = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.depthCodeLengthTwo != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.depthCodeLengthTwo,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="depth_code_length_three = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.depthCodeLengthThree != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.depthCodeLengthThree,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="depth_code_length_four = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.depthCodeLengthFour != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.depthCodeLengthFour,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="subject_type = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.subjectType != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.subjectType,jdbcType=TINYINT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="use_count = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.useCount != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.useCount,jdbcType=INTEGER}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="parent_subject_disable = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.parentSubjectDisable != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.parentSubjectDisable,jdbcType=BIT}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="pid_path = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.pidPath != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.pidPath,jdbcType=VARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+   <trim prefix="set" suffixOverrides=",">
+      <trim prefix="calculate_config = case" suffix="end,">
+        <foreach collection="list" index="index" item="item">
+          <if test="item.calculateConfig != null">
+            when id = #{item.id,jdbcType=BIGINT} then #{item.calculateConfig,jdbcType=LONGVARCHAR}
+          </if>
+        </foreach>
+      </trim>
+  </trim>
+  where id in
+    <foreach close=")" collection="list" item="item" open="(" separator=", ">
+      #{item.id,jdbcType=BIGINT}
+    </foreach>
+</update>
+
+  <insert id="insertBatch" keyColumn="id" keyProperty="id" parameterType="java.util.Collection" useGeneratedKeys="true">
+    insert into subject (pid, code, sort, name, mnemonic_code, balance_direction, level, tenant_id, disable, create_time, update_time, member_id, update_member_id, del_flag, subject_cate, node_depth, depth_code_length_one, depth_code_length_two, depth_code_length_three, depth_code_length_four, subject_type, use_count, parent_subject_disable, pid_path, calculate_config) values
+    <foreach collection="list" index="index" item="item" separator=",">
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        #{item.pid, jdbcType=BIGINT},
+        #{item.code, jdbcType=VARCHAR},
+        #{item.sort, jdbcType=INTEGER},
+        #{item.name, jdbcType=VARCHAR},
+        #{item.mnemonicCode, jdbcType=VARCHAR},
+        #{item.balanceDirection, jdbcType=TINYINT},
+        #{item.level, jdbcType=INTEGER},
+        #{item.tenantId, jdbcType=BIGINT},
+        #{item.disable, jdbcType=BIT},
+        #{item.createTime, jdbcType=TIMESTAMP},
+        #{item.updateTime, jdbcType=TIMESTAMP},
+        #{item.memberId, jdbcType=BIGINT},
+        #{item.updateMemberId, jdbcType=BIGINT},
+        #{item.delFlag, jdbcType=BIT},
+        #{item.subjectCate, jdbcType=INTEGER},
+        #{item.nodeDepth, jdbcType=INTEGER},
+        #{item.depthCodeLengthOne, jdbcType=INTEGER},
+        #{item.depthCodeLengthTwo, jdbcType=INTEGER},
+        #{item.depthCodeLengthThree, jdbcType=INTEGER},
+        #{item.depthCodeLengthFour, jdbcType=INTEGER},
+        #{item.subjectType, jdbcType=TINYINT},
+        #{item.useCount, jdbcType=INTEGER},
+        #{item.parentSubjectDisable, jdbcType=BIT},
+        #{item.pidPath, jdbcType=VARCHAR},
+        #{item.calculateConfig, jdbcType=LONGVARCHAR},
+      </trim>
+    </foreach>
+  </insert>
+  <insert id="insertBatchSelective" keyColumn="id" parameterType="java.util.List">
+    <foreach collection="list" index="index" item="item" separator=";">
+      insert into subject 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.pid != null">
+          pid,
+        </if>
+        <if test="item.code != null">
+          code,
+        </if>
+        <if test="item.sort != null">
+          sort,
+        </if>
+        <if test="item.name != null">
+          name,
+        </if>
+        <if test="item.mnemonicCode != null">
+          mnemonic_code,
+        </if>
+        <if test="item.balanceDirection != null">
+          balance_direction,
+        </if>
+        <if test="item.level != null">
+          level,
+        </if>
+        <if test="item.tenantId != null">
+          tenant_id,
+        </if>
+        <if test="item.disable != null">
+          disable,
+        </if>
+        <if test="item.createTime != null">
+          create_time,
+        </if>
+        <if test="item.updateTime != null">
+          update_time,
+        </if>
+        <if test="item.memberId != null">
+          member_id,
+        </if>
+        <if test="item.updateMemberId != null">
+          update_member_id,
+        </if>
+        <if test="item.delFlag != null">
+          del_flag,
+        </if>
+        <if test="item.subjectCate != null">
+          subject_cate,
+        </if>
+        <if test="item.nodeDepth != null">
+          node_depth,
+        </if>
+        <if test="item.depthCodeLengthOne != null">
+          depth_code_length_one,
+        </if>
+        <if test="item.depthCodeLengthTwo != null">
+          depth_code_length_two,
+        </if>
+        <if test="item.depthCodeLengthThree != null">
+          depth_code_length_three,
+        </if>
+        <if test="item.depthCodeLengthFour != null">
+          depth_code_length_four,
+        </if>
+        <if test="item.subjectType != null">
+          subject_type,
+        </if>
+        <if test="item.useCount != null">
+          use_count,
+        </if>
+        <if test="item.parentSubjectDisable != null">
+          parent_subject_disable,
+        </if>
+        <if test="item.pidPath != null">
+          pid_path,
+        </if>
+        <if test="item.calculateConfig != null">
+          calculate_config,
+        </if>
+      </trim>
+       values 
+      <trim prefix="(" suffix=")" suffixOverrides=",">
+        <if test="item.pid != null">
+          #{item.pid, jdbcType=BIGINT},
+        </if>
+        <if test="item.code != null">
+          #{item.code, jdbcType=VARCHAR},
+        </if>
+        <if test="item.sort != null">
+          #{item.sort, jdbcType=INTEGER},
+        </if>
+        <if test="item.name != null">
+          #{item.name, jdbcType=VARCHAR},
+        </if>
+        <if test="item.mnemonicCode != null">
+          #{item.mnemonicCode, jdbcType=VARCHAR},
+        </if>
+        <if test="item.balanceDirection != null">
+          #{item.balanceDirection, jdbcType=TINYINT},
+        </if>
+        <if test="item.level != null">
+          #{item.level, jdbcType=INTEGER},
+        </if>
+        <if test="item.tenantId != null">
+          #{item.tenantId, jdbcType=BIGINT},
+        </if>
+        <if test="item.disable != null">
+          #{item.disable, jdbcType=BIT},
+        </if>
+        <if test="item.createTime != null">
+          #{item.createTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.updateTime != null">
+          #{item.updateTime, jdbcType=TIMESTAMP},
+        </if>
+        <if test="item.memberId != null">
+          #{item.memberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.updateMemberId != null">
+          #{item.updateMemberId, jdbcType=BIGINT},
+        </if>
+        <if test="item.delFlag != null">
+          #{item.delFlag, jdbcType=BIT},
+        </if>
+        <if test="item.subjectCate != null">
+          #{item.subjectCate, jdbcType=INTEGER},
+        </if>
+        <if test="item.nodeDepth != null">
+          #{item.nodeDepth, jdbcType=INTEGER},
+        </if>
+        <if test="item.depthCodeLengthOne != null">
+          #{item.depthCodeLengthOne, jdbcType=INTEGER},
+        </if>
+        <if test="item.depthCodeLengthTwo != null">
+          #{item.depthCodeLengthTwo, jdbcType=INTEGER},
+        </if>
+        <if test="item.depthCodeLengthThree != null">
+          #{item.depthCodeLengthThree, jdbcType=INTEGER},
+        </if>
+        <if test="item.depthCodeLengthFour != null">
+          #{item.depthCodeLengthFour, jdbcType=INTEGER},
+        </if>
+        <if test="item.subjectType != null">
+          #{item.subjectType, jdbcType=TINYINT},
+        </if>
+        <if test="item.useCount != null">
+          #{item.useCount, jdbcType=INTEGER},
+        </if>
+        <if test="item.parentSubjectDisable != null">
+          #{item.parentSubjectDisable, jdbcType=BIT},
+        </if>
+        <if test="item.pidPath != null">
+          #{item.pidPath, jdbcType=VARCHAR},
+        </if>
+        <if test="item.calculateConfig != null">
+          #{item.calculateConfig, jdbcType=LONGVARCHAR},
+        </if>
+      </trim>
+    </foreach>
+  </insert>
+</mapper>

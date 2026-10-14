@@ -1,0 +1,126 @@
+# server
+server:
+  # port
+  port: 8091
+  #  servlet:
+  #    # context path
+  #    context-path: /mysass-finance-admin-api
+  tomcat:
+    # tomcat URI encode
+    uri-encoding: UTF-8
+
+# spring
+spring:
+  # 应用名称
+  application:
+    name: bage-finance-admin-api
+  # 数据库配置
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    # HikariCP连接池配置（springboot2.0默认连接池，效率最高，没有sql拦截，无需引入依赖信息）
+    hikari:
+      minimum-idle: 5   # 最小空闲连接数量
+      idle-timeout: 180000   #  空闲连接存活最大时间，默认600000（10分钟）
+      maximum-pool-size: 20 # 连接池最大连接数，默认是10
+      auto-commit: true # 控制从池返回的链接的默认自动提交行为，默认值：true
+      pool-name: Hikari # 连接池名称
+      max-lifetime: 1800000 # 控制池中链接的最长生命周期，值0表示无限生命周期，默认1800000，即30分钟
+      connection-timeout: 30000 # 数据库链接超时时间，默认30秒，即30000
+      connection-test-query: SELECT 1
+      # 多久检查一次连接的活性
+      # 检查时会先把连接从池中拿出来（空闲的话），然后调用isValid()或执行connectionTestQuery来校验活性，如果通过校验，则放回池里。
+      # 默认 0 （不启用），最小值为 30000 ms，必须小于 maxLifetime。支持 JMX 动态修改
+      keepalive-time: 30000
+
+  jackson:
+    time-zone: GMT+8
+    date-format: yyyy-MM-dd HH:mm:ss
+  servlet:
+    # upload file
+    multipart:
+      max-file-size: 50MB #单个上传文件的最大大小
+      max-request-size: 50MB #整个请求的大小不能超过 50 兆字节（MB）
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher #使用 Ant 风格的路径模式来配置 URL 路径匹配策略
+  profiles:
+    active:
+      - local
+
+# Mybatis
+mybatis:
+  mapper-locations: classpath*:**/*Mapper.xml
+  type-aliases-package: com.bage
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 15
+
+# Swagger
+swagger:
+  enable: true
+  name: BAGE-FINANCE-ADMIN-API
+  description: BAGE-FINANCE-ADMIN-API
+  version: 0.0.1
+
+# Swagger UI
+knife4j:
+  enable: true
+  production: false
+  setting:
+    language: zh-CN
+    enableDynamicParameter: true
+
+# 日志配置
+logging:
+#  config: classpath:logback-spring-${spring.profiles.active}.xml
+  config: classpath:logback-spring-local.xml
+security:
+  # 开启安全校验
+  enable: true
+  getUserType: token
+  # 白名单
+  ignores:
+    # swagger
+    - /v3/api-docs
+    - /swagger-resources/configuration/ui
+    - /swagger-resources
+    - /swagger-resources/configuration/security
+    - /webjars/**
+    - /swagger-ui.html
+    - /doc.html
+    - /favicon.ico
+    - /login/*
+    - /reg/*
+    - /wxEvent/receiveMpEvent
+  expire: 36000
+sys:
+  #是否开启redisTemplate配置(默认关闭)
+  redis-template-config: true
+  #是否开启restTemplate配置(默认关闭)
+  rest-template-config: true
+  #是否开启json配置(默认关闭)
+  json-config: true
+  #是否启用自定义安全框架
+  enable-my-security: true
+
+xxl:
+  job:
+    admin:
+      ### 调度中心部署跟地址 [选填]：如调度中心集群部署存在多个地址则用逗号分隔。执行器将会使用该地址进行"执行器心跳注册"和"任务结果回调"；为空则关闭自动注册；
+      addresses: http://localhost:8080/xxl-job-admin
+    ### 执行器通讯TOKEN [选填]：非空时启用；
+    accessToken: e1c717f2-9d58-11ee-a3a0-00155d9bf92e
+    executor:
+      ### 执行器AppName [选填]：执行器心跳注册分组依据；为空则关闭自动注册
+      appname: ${spring.application.name}
+      ### 执行器注册 [选填]：优先使用该配置作为注册地址，为空时使用内嵌服务 ”IP:PORT“ 作为注册地址。从而更灵活的支持容器类型执行器动态IP和动态映射端口问题。
+      address:
+      ### 执行器IP [选填]：默认为空表示自动获取IP，多网卡时可手动设置指定IP，该IP不会绑定Host仅作为通讯实用；地址信息用于 "执行器注册" 和 "调度中心请求并触发任务"；
+      ip:
+      ### 执行器端口号 [选填]：小于等于0则自动获取；默认端口为9999，单机部署多个执行器时，注意要配置不同执行器端口；
+      ### 9999 被 xxl-job 自带的示例执行器 XxlJobExecutorApplication 占用，这里避开
+      port: 9998
+      ### 执行器运行日志文件存储磁盘路径 [选填] ：需要对该路径拥有读写权限；为空则使用默认路径；
+      logpath: E:\Sourcecodedirectory\mianshi\bage\bage-finance-service\xxl-job\jobhandler
+      ### 执行器日志文件保存天数 [选填] ： 过期日志自动清理, 限制值大于等于3时生效; 否则, 如-1, 关闭自动清理功能；
+      logretentiondays: 30
