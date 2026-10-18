@@ -1,13 +1,13 @@
 import { ExclamationCircleOutlined, PlusOutlined, ChromeOutlined, IeOutlined } from '@ant-design/icons';
-import { ActionType, PageContainer, ProColumns, ProFormDatePicker, ProFormSelect } from '@ant-design/pro-components';
-import { ProTable, TableDropdown, ProFormText, ProForm } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Switch, Modal, message, Tag, Select, DatePicker, Drawer, Tooltip, Table } from 'antd';
+import { ActionType, PageContainer, ProColumns, ProFormSelect } from '@ant-design/pro-components';
+import { ProTable, ProFormText, ProForm } from '@ant-design/pro-components';
+import { Button, Space, Switch, Modal, message, Tag, Select, DatePicker, Drawer, Tooltip, Table } from 'antd';
 
-import React, { useState, useEffect, useRef } from 'react';
-import request from 'umi-request';
-import { list, update, listByName } from '@/services/ant-design-pro/tenant';
+import React, { useState, useRef } from 'react';
+import { update, listByName } from '@/services/ant-design-pro/tenant';
 import { searchMemberManage, updateDisable, bindRoleIds as bindRoleId, getMemberInfo } from '@/services/ant-design-pro/member';
 import { listRole } from '@/services/ant-design-pro/role';
+import { del } from '@/services/ant-design-pro/voucherWordConfig';
 
 import { Link } from '@umijs/max';
 const { RangePicker } = DatePicker;
@@ -15,27 +15,26 @@ import type { TableRowSelection } from 'antd/es/table/interface';
 import moment from 'moment';
 
 export default () => {
-    const [tenantOptions, setTenantOptions] = useState([]);
+    const [tenantOptions, setTenantOptions] = useState<any[]>([]);
     const [selectedTenantId, setSelectedTenantId] = useState<string | undefined>(undefined);
     const [openRole, setOpenRole] = useState(false);
-    const [tenantId, setTenantId] = useState(Number);
     const [memberId, setMemberId] = useState(Number);
-    const [selectedRoleRowKeys, setSelectedRoleRowKeys] = useState([]);
-    const [checkStrictly, setCheckStrictly] = useState(false);
-    const [roleData, setRoleData] = useState([]);
-    const [bindRoleIds, setBindRoleIds] = useState([]);
-    const [unBindRoleIds, setUnBindRoleIds] = useState([]);
-    const [copySelectedRoleRowKeys, setCopySelectedRoleRowKeys] = useState([]);
+    const [selectedRoleRowKeys, setSelectedRoleRowKeys] = useState<any[]>([]);
+    const [checkStrictly] = useState(false);
+    const [roleData, setRoleData] = useState<any[]>([]);
+    const [bindRoleIds, setBindRoleIds] = useState<any[]>([]);
+    const [unBindRoleIds, setUnBindRoleIds] = useState<any[]>([]);
+    const [copySelectedRoleRowKeys, setCopySelectedRoleRowKeys] = useState<any[]>([]);
     const [openEditMember, setOpenEditMember] = useState(false);
     const [editForm] = ProForm.useForm();
     const actionRef = useRef<ActionType>();
-    const [tenantSysRoleIds, setTenantSysRoleIds] = useState([]);
+    const [tenantSysRoleIds, setTenantSysRoleIds] = useState<any[]>([]);
 
 
     const onCloseTenant = async () => {
         setOpenEditMember(false);
     }
-
+    let onListRole: (id: number) => Promise<void>;
     const onOpenEditMember = async (id: number) => {
         setMemberId(id);
         setOpenEditMember(true);
@@ -81,23 +80,26 @@ export default () => {
     const onSearchTenant = (name: string) => {
         setTenantOptions([]);
         listByName({ name: name }).then(response => {
-            const dataArray = response.data.map(data => ({
+            const dataArray = response.data.map((data: any) => ({
                 value: data.id,
                 label: data.name
             }));
             setTenantOptions(dataArray);
         });
     }
-    interface DataType {
+    interface _DataType {
         key: React.ReactNode;
         name: string;
         age: number;
         address: string;
-        children?: DataType[];
+        children?: _DataType[];
     }
-    const rowSelectionRole: TableRowSelection<DataType> = {
+    const isDisabled = (record: any) => {
+        return tenantSysRoleIds.includes(record.id) ? false : true;
+    }
+    const rowSelectionRole: TableRowSelection<any> = {
         selectedRowKeys: selectedRoleRowKeys,
-        onChange: (selectedRowKeys, selectedRows) => {
+        onChange: (selectedRowKeys, _selectedRows) => {
             setSelectedRoleRowKeys(selectedRowKeys);
             // //新绑定的菜单
             let bindRoleId = selectedRowKeys.filter(p => !copySelectedRoleRowKeys || !copySelectedRoleRowKeys.includes(p));
@@ -108,7 +110,7 @@ export default () => {
             // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
             // console.log("bindMenuId" + bindMenuId, "unBindMenuId" + unBindMenuId);
         },
-        getCheckboxProps: (record) => ({
+        getCheckboxProps: (record: any) => ({
             disabled: isDisabled(record) // 根据函数返回的值来判断是否禁用复选框
         }),
         onSelect: (record, selected, selectedRows) => {
@@ -118,9 +120,6 @@ export default () => {
             console.log(selected, selectedRows, changeRows);
         },
     };
-    const isDisabled = (record) => {
-        return tenantSysRoleIds.includes(record.id) ? false : true;
-    }
     const getBrowserType = (userAgent: string) => {
         if (userAgent.indexOf("Firefox") !== -1) {
             return "Firefox";
@@ -138,6 +137,27 @@ export default () => {
             return "unknown";
         }
     }
+
+    const deviceColumns = [
+        {
+            title: '',
+            dataIndex: 'clientName',
+            key: 'clientIcon',
+            render: (_text: any, record: any) => {
+                return getBrowserType(record.clientName);
+            }
+        },
+        {
+            title: '设备ID',
+            dataIndex: 'clientId',
+            key: 'clientId',
+        },
+        {
+            title: '设备名称',
+            dataIndex: 'clientName',
+            key: 'clientName',
+        },
+    ];
 
     const columns: ProColumns[] = [
         {
@@ -180,18 +200,18 @@ export default () => {
             ellipsis: true,
             search: true,
             valueType: 'select',
-            renderFormItem: (_, { type, defaultRender, ...rest }) => {
+            renderFormItem: (_, { ..._rest }) => {
                 return <Select
                     // mode="tags"
                     labelInValue
                     showSearch={true}
-                    filterOption={(input, option) => {
+                    filterOption={(input, option: any) => {
                         //忽略大小写
                         return option.label.toLowerCase().includes(input.toLowerCase());
                     }}
-                    onFocus={(value) => { onSearchTenant(""); }}
+                    onFocus={() => { onSearchTenant(""); }}
                     onSearch={(value) => { onSearchTenant(value); }}
-                    onChange={(value) => { setSelectedTenantId(value.value); }} // 添加此处，更新选中的租户管理员的值
+                    onChange={(value: any) => { setSelectedTenantId(value.value); }} // 添加此处，更新选中的租户管理员的值
                     options={tenantOptions}
                 />;
 
@@ -204,7 +224,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: true,
-            renderFormItem: (_, { type, defaultRender, ...rest }) => {
+            renderFormItem: () => {
                 return <RangePicker />;
 
             },
@@ -216,7 +236,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Tooltip placement="left"
                     overlayStyle={{ maxWidth: '600px', wordWrap: 'break-word' }}
                     title={() => {
@@ -251,12 +271,12 @@ export default () => {
             search: false,
             render: (text, record, _, action) => (
                 <Space>
-                    <Switch checkedChildren="是" unCheckedChildren="否" checked={!record.disable} onChange={(checked: boolean) => {
+                    <Switch checkedChildren="是" unCheckedChildren="否" checked={!record.disable} onChange={() => {
                         updateDisable({ id: record.id, disable: !record.disable })
-                            .then(response => {
+                            .then(() => {
                                 action?.reload();
                             })
-                            .catch(error => {
+                            .catch(() => {
                                 action?.reload();
                             });
                     }} />
@@ -279,7 +299,7 @@ export default () => {
                             onOk: async () => {
                                 console.log("删除：" + record.id);
                                 await del({ id: record.id })
-                                    .then(response => {
+                                    .then((response: any) => {
                                         if (response.data) {
                                             action?.reload();
                                         }
@@ -287,7 +307,7 @@ export default () => {
                                             message.error("删除失败");
                                         }
                                     })
-                                    .catch(error => {
+                                    .catch((error: any) => {
                                         console.log(error);
                                     });
 
@@ -298,10 +318,10 @@ export default () => {
                     </Link>
                 )
                 return [
-                    <Link to={"#"} onClick={() => { onOpenEditMember(record.id) }}>
+                    <Link to={"#"} key="edit" onClick={() => { onOpenEditMember(record.id) }}>
                         编辑
                     </Link>,
-                    <Link to={"#"} onClick={() => { onOpenRole(record.id) }}>
+                    <Link to={"#"} key="bindRole" onClick={() => { onOpenRole(record.id) }}>
                         绑定角色
                     </Link>,
                     delLink
@@ -310,28 +330,7 @@ export default () => {
             }
         },
     ];
-    const deviceColumns = [
-        {
-            title: '',
-            dataIndex: 'clientName',
-            key: 'clientIcon',
-            render: (text, record, _, action) => {
-                return getBrowserType(record.clientName);
-            }
-        },
-        {
-            title: '设备ID',
-            dataIndex: 'clientId',
-            key: 'clientId',
-        },
-        {
-            title: '设备名称',
-            dataIndex: 'clientName',
-            key: 'clientName',
-        },
-    ];
-
-    const onListRole = async (id: number) => {
+    onListRole = async (id: number) => {
         //查询当前角色已经绑定的资源
         getMemberInfo({ id: id }).then(response => {
             if (response.data.sysRoleIds) {
@@ -396,7 +395,7 @@ export default () => {
                 actionRef={actionRef}
                 cardBordered
                 bordered
-                request={async (params = {}, sort, filter) => {
+                request={async (params: any = {}, sort, filter) => {
                     console.log(sort, filter);
                     let beginCreateTime;
                     let endCreateTime;
@@ -496,7 +495,9 @@ export default () => {
                         },
                     }}
                     rowKey="id"
-                    pagination={true}
+                    pagination={{
+                        pageSize: 20,
+                    }}
                     search={false} // 关闭搜索功能
                     options={{
                         density: false, // 不显示密度调整按钮
@@ -534,7 +535,7 @@ export default () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_, _dom) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}
@@ -569,18 +570,17 @@ export default () => {
                         label="租户"
                         placeholder="请选择租户"
                         fieldProps={{
-                            // size: 'large',
+                            labelInValue: true,
+                            showSearch: true,
+                            filterOption: (input: any, option: any) => {
+                                //忽略大小写
+                                return option.label.toLowerCase().includes(input.toLowerCase());
+                            },
+                            onFocus: () => { onSearchTenant(""); },
+                            onSearch: (value: any) => { onSearchTenant(value); },
+                            onChange: (value: any) => { setSelectedTenantId(value ? value.value : ""); },
                         }}
                         rules={[{ required: true }]}
-                        labelInValue
-                        showSearch={true}
-                        filterOption={(input, option) => {
-                            //忽略大小写
-                            return option.label.toLowerCase().includes(input.toLowerCase());
-                        }}
-                        onFocus={(value) => { onSearchTenant(""); }}
-                        onSearch={(value) => { onSearchTenant(value); }}
-                        onChange={(value) => { setSelectedTenantId(value ? value.value : ""); }} // 添加此处，更新选中的租户管理员的值
                         options={tenantOptions}
                     />
                 </ProForm>

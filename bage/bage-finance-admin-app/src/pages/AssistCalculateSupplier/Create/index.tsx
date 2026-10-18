@@ -1,16 +1,15 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader } from 'antd';
+import { ProForm, ProFormText, ProFormSwitch } from '@ant-design/pro-components';
+import { Form, message, Cascader } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { createSupplier, updateSupplier } from '@/services/ant-design-pro/assistCalculateSummary';
+import { createSupplier } from '@/services/ant-design-pro/assistCalculateSummary';
 import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
 
 const AssistCalculateSupplierCreate: React.FC<any> = (props) => {
     const [form] = Form.useForm();
     const { p } = props;
 
-    const [regionData, setRegionData] = useState([]);
-    const [selectedRegionValues, setSelectedRegionValues] = useState([]);
+    const [regionData, setRegionData] = useState<any[]>([]);
+    const [selectedRegionValues, setSelectedRegionValues] = useState<any[]>([]);
 
     const onFinish = async (values: any) => {
         // let provinceCityCountryCode: string[] = form.getFieldValue("provinceCityCountryCode").split(',');
@@ -41,13 +40,13 @@ const AssistCalculateSupplierCreate: React.FC<any> = (props) => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
     };
 
-    const handleCascaderChange = (values: [], selectedOptions: any) => {
+    const handleCascaderChange = (values: any, selectedOptions: any) => {
         // values 是选中的值数组
         // selectedOptions 是选中的选项对象数组（包含 label、value、isLeaf 等信息）
 

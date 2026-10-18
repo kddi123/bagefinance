@@ -24,11 +24,7 @@ export async function get(
 /** 租户列表 GET /tenant/list */
 export async function list(
   params: {
-    // query
-    /** 当前的页码 */
-    pageNum?: number;
-    /** 页面的容量 */
-    pageSize?: number;
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {
@@ -45,12 +41,7 @@ export async function list(
 /** 租户列表 GET /tenant/bindRoleIds */
 export async function bindRoleIds(
   params: {
-    tenantId?:number;
-    // query
-    /** 当前的页码 */
-    bindRoleIds?: [];
-    /** 页面的容量 */
-    unBindRoleIds?: [];
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {
@@ -67,7 +58,7 @@ export async function bindRoleIds(
 /** 修改租户 GET /tenant/update */
 export async function update(
   params: {
-
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {
@@ -84,6 +75,7 @@ export async function update(
 /** 租户列表 GET /tenant/listByName */
 export async function listByName(
   params: {
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {

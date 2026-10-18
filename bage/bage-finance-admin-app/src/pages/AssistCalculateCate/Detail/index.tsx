@@ -1,9 +1,7 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader, Tooltip, Popconfirm } from 'antd';
+import { ProForm, ProFormText } from '@ant-design/pro-components';
+import { Form, Button, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { update, getAssistCalculateCateDetail } from '@/services/ant-design-pro/assistCalculateCate';
-import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const AssistCalculateCateUpdate: React.FC<any> = (props) => {
@@ -27,11 +25,11 @@ const AssistCalculateCateUpdate: React.FC<any> = (props) => {
             ...values,
         };
         console.log(params);
-        const allValues = form.getFieldsValue();
+        const allValues: Record<string, string> = form.getFieldsValue();
         // 从 allValues 中提取自定义列的值
         const customColumnValues = Object.keys(allValues)
             .filter((key) => key.startsWith('c'))
-            .reduce((acc, key) => {
+            .reduce((acc: Record<string, string>, key) => {
                 if (key === "c_code" || key === "c_name" || key === "c_notes" || key === "c_mnemonicCode") {
                     const modifiedKey = key.slice(2); // 移除 'c_' 前缀
                     acc[modifiedKey] = allValues[key];
@@ -52,7 +50,7 @@ const AssistCalculateCateUpdate: React.FC<any> = (props) => {
             else {
                 message.error("修改失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -67,12 +65,12 @@ const AssistCalculateCateUpdate: React.FC<any> = (props) => {
             form={form}
             onFinish={onFinish}
             layout="horizontal"
-            request={async (params = {}) => {
+            request={async () => {
                 return await getAssistCalculateCateDetail({ id: p.id }).then(response => {
                     // 遍历 customerColumnConfigList，组合成对象
                     console.log("aaaaa" + response.data.customerColumnConfigList.length)
                     let columnCount = 0;
-                    const combinedObject = response.data.customerColumnConfigList.reduce((acc, { columnName, columnAlias }) => {
+                    const combinedObject = response.data.customerColumnConfigList.reduce((acc: Record<string, string>, { columnName, columnAlias }: { columnName: string; columnAlias: string }) => {
                         // 添加前缀，如果是 "code" 则加上 "c_code" 前缀，如果是 "name" 则加上 "c_name" 前缀
                         let prefixedColumnName = columnName;
                         if (columnName === "code" || columnName === "name" || columnName === "notes" || columnName === "mnemonicCode") {

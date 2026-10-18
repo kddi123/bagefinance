@@ -1,9 +1,8 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Switch, Modal, message, Tag } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Space, Switch, Modal, message, Tag } from 'antd';
 import { useRef } from 'react';
-import request from 'umi-request';
 import { list, del, updateDefaultFlag } from '@/services/ant-design-pro/voucherWordConfig';
 import { Link } from '@umijs/max';
 
@@ -34,12 +33,12 @@ const columns: ProColumns[] = [
         search: false,
         render: (text, record, _, action) => (
             <Space>
-                <Switch disabled={record.defaultFlag} checkedChildren="是" unCheckedChildren="否" checked={record.defaultFlag} onChange={(checked: boolean) => {
+                <Switch disabled={record.defaultFlag} checkedChildren="是" unCheckedChildren="否" checked={record.defaultFlag} onChange={() => {
                     updateDefaultFlag({ id: record.id })
-                        .then(response => {
+                        .then(() => {
                             action?.reload();
                         })
-                        .catch(error => {
+                        .catch(() => {
                             action?.reload();
                         });
                 }} />

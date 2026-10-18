@@ -1,11 +1,10 @@
-import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns, ProForm, ProFormText } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message, Drawer, Tree } from 'antd';
-import { useRef, useState, useEffect, Key } from 'react';
-import request from 'umi-request';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Modal, message, Drawer } from 'antd';
+import { useRef, useState } from 'react';
 import { list, create, get, update, del } from '@/services/ant-design-pro/resource';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 
 const Resource: React.FC = () => {
@@ -15,7 +14,7 @@ const Resource: React.FC = () => {
     const [formEdit] = ProForm.useForm();
     const [formCreate] = ProForm.useForm();
     const [createPid, setCreatePid] = useState<number>();
-    const [id, setId] = useState<number>();
+    const [_id, setId] = useState<number>();
 
 
     // 在这里调用你的接口获取 Tree 数据
@@ -30,7 +29,7 @@ const Resource: React.FC = () => {
     };
 
     const onFinishCreate = async (record: any) => {
-        const { parentName, ...submitValues } = record;
+        const { parentName: _parentName, ...submitValues } = record;
         submitValues.pid = createPid;
         // 替换成实际的接口地址
         await create(submitValues).then(response => {
@@ -69,7 +68,7 @@ const Resource: React.FC = () => {
 
     const onFinishUpdate = async (record: any) => {
 
-        const { parentName, ...submitValues } = record;
+        const { parentName: _parentName, ...submitValues } = record;
         // 替换成实际的接口地址
         await update(submitValues).then(response => {
             if (response.data) {
@@ -122,7 +121,7 @@ const Resource: React.FC = () => {
             ellipsis: true,
             search: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => [
+            render: (_text, record, _index) => [
                 <>[{record.id}] {record.name}</>
             ],
 
@@ -139,7 +138,7 @@ const Resource: React.FC = () => {
             title: <strong>操作</strong>,
             valueType: 'option',
             key: 'option',
-            render: (text, record, _, action) => {
+            render: (_text, record, _index, _action) => {
                 const addLink = record.pid === 0 && (
                     <Link to='#' onClick={() => onOpenCreateResource(record.id, record.name)} key="editable">
                         新增
@@ -225,7 +224,7 @@ const Resource: React.FC = () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_: any) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}
@@ -277,7 +276,7 @@ const Resource: React.FC = () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_: any) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}

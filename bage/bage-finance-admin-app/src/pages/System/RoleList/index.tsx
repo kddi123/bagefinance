@@ -1,30 +1,19 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns, ProForm, ProFormSwitch, ProFormText } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message, Drawer, Tree, Checkbox } from 'antd';
-import { useRef, useState, useEffect, Key } from 'react';
-import request from 'umi-request';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Space, Tag, Switch, Modal, message, Drawer } from 'antd';
+import { useRef, useState } from 'react';
 import { listRole, delSysRole, updateRoleDisable, getRoleById, updateRole, createRole, roleBindMenu, roleBindResource } from '@/services/ant-design-pro/role';
 import { listTreeMenu } from '@/services/ant-design-pro/menu';
 import { list } from '@/services/ant-design-pro/resource';
 import { listBindMenuIdByRoleId } from '@/services/ant-design-pro/roleBindMenu';
 import { listBindResourceIdByRoleId } from '@/services/ant-design-pro/roleBindResource';
-import { IconMap, loopMenuItem } from '@/services/common/iconMap';
-import type { DataNode, TreeProps } from 'antd/es/tree';
-import { Link } from 'umi';
+import { IconMap } from '@/services/common/iconMap';
+import { Link } from '@umijs/max';
 import type { TableRowSelection } from 'antd/es/table/interface';
 
-interface DataType {
-    key: React.ReactNode;
-    name: string;
-    age: number;
-    address: string;
-    children?: DataType[];
-}
 
 const RoleList: React.FC = () => {
-    const [treeData, setTreeData] = useState([]);
-    const [selectedKeys, setSelectedKeys] = useState<number[]>();
     const actionRef = useRef<ActionType>();
     const roleActionRef = useRef<ActionType>();
 
@@ -33,33 +22,28 @@ const RoleList: React.FC = () => {
     const [openCreateRole, setOpenCreateRole] = useState(false);
     const [openEditRole, setOpenEditRole] = useState(false);
     const [openResource, setOpenResource] = useState(false);
-    const [defaultCheckedKeys, setDefaultCheckedKeys] = useState<string[]>();
     const [roleId, setRoleId] = useState<number>();
     const [editForm] = ProForm.useForm();
     const [createForm] = ProForm.useForm();
 
 
     // const [checkStrictly, setCheckStrictly] = useState(false);
-    const [copySelectedMenuRowKeys, setCopySelectedMenuRowKeys] = useState([]);
-    const [selectedMenuRowKeys, setSelectedMenuRowKeys] = useState([]);
-    const [menuDataSource, setMenuDataSource] = useState<[]>();
-    const [bindMenuIds, setBindMenuIds] = useState<[]>();
-    const [unBindMenuIds, setUnBindMenuIds] = useState<[]>();
+    const [copySelectedMenuRowKeys, setCopySelectedMenuRowKeys] = useState<any[]>([]);
+    const [selectedMenuRowKeys, setSelectedMenuRowKeys] = useState<any[]>([]);
+    const [menuDataSource, setMenuDataSource] = useState<any>();
+    const [bindMenuIds, setBindMenuIds] = useState<any[]>([]);
+    const [unBindMenuIds, setUnBindMenuIds] = useState<any[]>([]);
 
-    const [checkStrictly, setCheckStrictly] = useState(false);
-    const [copySelectedResourceRowKeys, setCopySelectedResourceRowKeys] = useState([]);
-    const [selectedResourceRowKeys, setSelectedResourceRowKeys] = useState([]);
-    const [resourceDataSource, setResourceDataSource] = useState<[]>();
-    const [bindResourceIds, setBindResourceIds] = useState<[]>();
-    const [unBindResourceIds, setUnBindResourceIds] = useState<[]>();
+    const [checkStrictly] = useState(false);
+    const [copySelectedResourceRowKeys, setCopySelectedResourceRowKeys] = useState<any[]>([]);
+    const [selectedResourceRowKeys, setSelectedResourceRowKeys] = useState<any[]>([]);
+    const [resourceDataSource, setResourceDataSource] = useState<any>();
+    const [bindResourceIds, setBindResourceIds] = useState<any[]>([]);
+    const [unBindResourceIds, setUnBindResourceIds] = useState<any[]>([]);
 
+    let listMenu: (roleId: number) => Promise<any>;
+    let listResource: (roleId: number) => Promise<any>;
 
-    //映射菜单对应的图标
-    const loopMenuItem = (menus: API.ListTreeMenuVo[]): API.ListTreeMenuVo[] => menus.map(({ icon, children, title, ...item }) => ({
-        ...item,
-        title: (<div>{IconMap[icon]}<span style={{ marginLeft: 5 }}>{title}</span></div>),
-        children: children && loopMenuItem(children),
-    }));
 
     //创建角色面板
     const onOpenCreateRole = () => {
@@ -83,12 +67,6 @@ const RoleList: React.FC = () => {
         setOpenCreateRole(false);
         setOpenEditRole(false);
     };
-    const onCheck: TreeProps['onCheck'] = (checkedKeys, info) => {
-        // console.log('selected', checkedKeys, info);
-        setDefaultCheckedKeys(checkedKeys as string[]);
-        console.log(checkedKeys)
-    };
-
     const onDelSysRole = async (record: API.ListRoleVo) => {
         Modal.confirm({
             title: <span style={{ fontWeight: 'bold' }}>删除角色</span>,
@@ -215,7 +193,7 @@ const RoleList: React.FC = () => {
             console.error('Error fetching tree data:', error);
         }
     };
-    const listMenu = async (roleId: number) => {
+    listMenu = async (roleId: number) => {
         //查询当前角色已经绑定的资源
         listBindMenuIdByRoleId({ roleId: roleId }).then(response => {
             if (response.data) {
@@ -232,10 +210,10 @@ const RoleList: React.FC = () => {
         // 替换成实际的接口地址
         return await listTreeMenu({}).then(response => {
             if (response.data) {
-                response.data.map((item) => {
+                response.data.forEach((item: any) => {
                     if (item.children) {
-                        let preChildrenItem;
-                        item.children.map((childrenItem) => {
+                        let preChildrenItem: any = undefined;
+                        item.children.forEach((childrenItem: any) => {
                             if (childrenItem.hideInMenu && preChildrenItem && childrenItem.path.startsWith(preChildrenItem.path)) {
                                 childrenItem.title = "-------" + childrenItem.title;
                             }
@@ -274,7 +252,7 @@ const RoleList: React.FC = () => {
     const onCloseMenu = () => {
         setOpenMenu(false);
     };
-    const rowSelectionMenu: TableRowSelection<DataType> = {
+    const rowSelectionMenu: TableRowSelection<any> = {
         selectedRowKeys: selectedMenuRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
             setSelectedMenuRowKeys(selectedRowKeys);
@@ -310,7 +288,7 @@ const RoleList: React.FC = () => {
     const onCloseResource = () => {
         setOpenResource(false);
     }
-    const listResource = async (roleId: number) => {
+    listResource = async (roleId: number) => {
         //查询当前角色已经绑定的资源
         listBindResourceIdByRoleId({ roleId: roleId }).then(response => {
             if (response.data) {
@@ -365,7 +343,7 @@ const RoleList: React.FC = () => {
                 true: { text: '禁用' },
             },
             search: true,
-            render: (text, record, _, action) => (
+            render: (_text, record) => (
                 <Space>
                     <Switch checkedChildren="启用" unCheckedChildren="禁用" checked={!record.disable} onChange={() => onUpdateRoleDisable(record)} />
                 </Space>
@@ -375,7 +353,7 @@ const RoleList: React.FC = () => {
             title: <strong>操作</strong>,
             valueType: 'option',
             key: 'option',
-            render: (text, record, _, action) => [
+            render: (_text, record, _index, _action) => [
                 // <a
                 //     key="editable"
                 //     onClick={() => {
@@ -387,10 +365,10 @@ const RoleList: React.FC = () => {
                 <Link to='#' onClick={() => onOpenEditRole(record.id)} key="editable">
                     编辑
                 </Link>,
-                <Link to='#' onClick={() => onOpenMenu(record.id)}>
+                <Link to='#' onClick={() => onOpenMenu(record.id)} key="bindMenu">
                     绑定菜单
                 </Link>,
-                <Link to='#' onClick={() => onOpenResource(record.id)}>
+                <Link to='#' onClick={() => onOpenResource(record.id)} key="bindResource">
                     绑定资源
                 </Link>,
                 <a onClick={() => { onDelSysRole(record); }} style={{ color: 'red' }} rel="noopener noreferrer" key="del">
@@ -408,7 +386,7 @@ const RoleList: React.FC = () => {
             render: (text, record) => (
                 <span style={{ color: record.hideInMenu ? '#888888' : 'inherit' }}>
                     {/* 在这里可以自定义字段内容 */}
-                    <div>{IconMap[record.icon]} {record.title}</div>
+                    <div>{record.icon ? IconMap[record.icon] : null} {record.title}</div>
                 </span>
             ),
         },
@@ -444,7 +422,7 @@ const RoleList: React.FC = () => {
 
         }
     ];
-    const rowSelectionResource: TableRowSelection<DataType> = {
+    const rowSelectionResource: TableRowSelection<any> = {
         selectedRowKeys: selectedResourceRowKeys,
         onChange: (selectedRowKeys, selectedRows) => {
             setSelectedResourceRowKeys(selectedRowKeys);
@@ -645,7 +623,7 @@ const RoleList: React.FC = () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_: any) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}
@@ -705,7 +683,7 @@ const RoleList: React.FC = () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_: any) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}

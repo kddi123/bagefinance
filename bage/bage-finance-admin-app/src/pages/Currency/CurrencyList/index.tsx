@@ -1,11 +1,10 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Tag, Modal, message } from 'antd';
 import { useRef, useState } from 'react';
-import request from 'umi-request';
 import { list, del } from '@/services/ant-design-pro/currencyConfig';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 const CurrencyList: React.FC = () => {
     const columns: ProColumns[] = [

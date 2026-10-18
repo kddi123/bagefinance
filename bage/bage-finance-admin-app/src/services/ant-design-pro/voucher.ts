@@ -32,7 +32,7 @@ export async function list(
 /** 获取凭证明细 GET /voucher/list */
 export async function get(
   params: {
-    id: number
+    id?: number | string
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/voucher/get', {
@@ -46,7 +46,7 @@ export async function get(
 export async function del(
   params: {
     id: number,
-    voucherNum: number
+    [key: string]: any
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/voucher/del', {

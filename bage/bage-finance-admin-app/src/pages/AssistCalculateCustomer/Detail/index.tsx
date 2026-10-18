@@ -1,22 +1,20 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader } from 'antd';
+import { ProForm, ProFormText, ProFormSwitch } from '@ant-design/pro-components';
+import { Form, message, Cascader } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { getCustomer, updateCustomer } from '@/services/ant-design-pro/assistCalculateSummary';
 import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
-import { response } from 'express';
 
 const AssistCalculateCustomerDetail: React.FC<any> = (props) => {
     const [form] = Form.useForm();
     const { p } = props;
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
 
-    const [regionData, setRegionData] = useState([]);
-    const [selectedRegionValues, setSelectedRegionValues] = useState([]);
+    const [regionData, setRegionData] = useState<any[]>([]);
+    const [selectedRegionValues, setSelectedRegionValues] = useState<any[]>([]);
 
     const onFinish = async (values: any) => {
         // let provinceCityCountryCode: string[] = form.getFieldValue("provinceCityCountryCode").split(',');
@@ -47,13 +45,13 @@ const AssistCalculateCustomerDetail: React.FC<any> = (props) => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
     };
 
-    const handleCascaderChange = (values: [], selectedOptions: any) => {
+    const handleCascaderChange = (values: any, selectedOptions: any) => {
         // values 是选中的值数组
         // selectedOptions 是选中的选项对象数组（包含 label、value、isLeaf 等信息）
 
@@ -62,10 +60,6 @@ const AssistCalculateCustomerDetail: React.FC<any> = (props) => {
 
         // 更新状态
         setSelectedRegionValues(values);
-    };
-    const refreshData = () => {
-        // 执行数据刷新的逻辑
-        message.success(p.id)
     };
     // 在组件加载时调用接口
     useEffect(() => {
@@ -79,7 +73,7 @@ const AssistCalculateCustomerDetail: React.FC<any> = (props) => {
             form={form}
             onFinish={onFinish}
             layout="vertical"
-            request={async (params = {}) => {
+            request={async () => {
                 let data = await getCustomer({ id: p.id }).then(response => {
                     const { provinceCode, cityCode, countyCode } = response.data;
                     setSelectedRegionValues([provinceCode, cityCode, countyCode]);

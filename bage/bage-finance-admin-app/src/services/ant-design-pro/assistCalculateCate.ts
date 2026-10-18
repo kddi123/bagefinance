@@ -31,7 +31,7 @@ export async function create(
   params: {
     code?: string,
     name?: string,
-    customerColumnConfigList?: []
+    customerColumnConfigList?: { columnName: string; columnAlias: string }[]
   },
   options?: { [key: string]: any },
 ) {

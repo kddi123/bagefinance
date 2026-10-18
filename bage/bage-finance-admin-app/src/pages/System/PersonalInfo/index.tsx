@@ -1,18 +1,14 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCaptcha } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Tabs, TabsProps, Image, Space, Alert } from 'antd';
-import React, { useState, useEffect, useCallback } from 'react';
+import { PageContainer, ProForm, ProFormText, ProFormCaptcha } from '@ant-design/pro-components';
+import { Card, Form, message, Tabs } from 'antd';
+import React, { useState, useEffect } from 'react';
 import { updateEmailAndName, updatePassword, generateBase64Code, sendSmsCode, updatePhone } from '@/services/ant-design-pro/system';
 import {
     BarcodeOutlined,
     LockOutlined,
     MailFilled,
     MobileFilled,
-    SettingOutlined,
     UserOutlined
 } from '@ant-design/icons';
-import { FormattedMessage, history, SelectLang, useIntl, useModel } from '@umijs/max';
-import { flushSync } from 'react-dom';
-import { ResponseStructure } from '@/requestErrorConfig';
 import { currentUser } from '@/services/ant-design-pro/api';
 const { TabPane } = Tabs;
 
@@ -21,7 +17,7 @@ const PersonalInfo: React.FC = () => {
     const [form] = Form.useForm();
     const [base64Code, setBase64Code] = useState<API.GenerateBase64Code>({ data: "iVBORw0KGgoAAAANSUhEUgAAAA0AAAALCAIAAAAr0JA2AAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAUSURBVChTY/hPHBhVhx0MjLr//wFSjatj+k9ANwAAAABJRU5ErkJggg==" });
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
@@ -52,7 +48,7 @@ const PersonalInfo: React.FC = () => {
 
     };
     const onFinish3 = async (values: any) => {
-        await updatePhone(values).then(response => {
+        await updatePhone(values).then((response: any) => {
             if (response.data) {
                 message.success("保存成功");
             }
@@ -65,20 +61,21 @@ const PersonalInfo: React.FC = () => {
 
     };
 
-    const init = async () => {
-        await getBase64CodeMethod();
-    }
     const getBase64CodeMethod = async () => {
         const result = await generateBase64Code();
         setBase64Code(result);
         console.log(result);
     }
 
+    const init = async () => {
+        await getBase64CodeMethod();
+    }
+
     const clickGetBase64CodeMethod = async () => {
         await getBase64CodeMethod();
     };
     const getFakeCaptchaMethod = async () => {
-        await form.validateFields(['phone', 'code']).then(async (values) => {
+        await form.validateFields(['phone', 'code']).then(async (_values) => {
             let phone = form.getFieldValue('phone');
             let code = form.getFieldValue('code');
             try {
@@ -136,7 +133,7 @@ const PersonalInfo: React.FC = () => {
                             onFinish={onFinish1}
                             labelCol={{ span: 2 }}   // 控制 label 的布局，可以调整 span 的值
                             wrapperCol={{ span: 30 }} // 控制包裹内容的布局，可以调整 span 的值
-                            request={async (params = {}) => {
+                            request={async (_params = {}) => {
                                 console.log(urlParamMap)
                                 return await currentUser().then(response => {
                                     return {

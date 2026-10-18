@@ -1,9 +1,9 @@
 import { PageContainer  } from '@ant-design/pro-components';
-import { useLocation } from 'react-router-dom';
+import { useLocation } from '@umijs/max';
 import FileIndex from '@/components/File/index';
 
 
-const FileList: React.FC = () => {
+const FileList: React.FC  = () => {
     const location = useLocation();
     const searchParams = new URLSearchParams(location.search);
     const copyId = searchParams.get('copyId');

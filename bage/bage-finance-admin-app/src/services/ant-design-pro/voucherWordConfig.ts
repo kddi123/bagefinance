@@ -17,7 +17,7 @@ export async function list(
 /** 凭证字详情 GET /voucherWordConfig/get */
 export async function get(
   params: {
-    id?: number
+    id?: number | string
   },
   options?: { [key: string]: any },
 ) {

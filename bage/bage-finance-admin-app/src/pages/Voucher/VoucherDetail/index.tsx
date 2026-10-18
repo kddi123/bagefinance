@@ -1,14 +1,13 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Space } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components';
+import { Card, Form, message } from 'antd';
+import React, { useEffect } from 'react';
 import { update, get } from '@/services/ant-design-pro/voucherWordConfig';
-import { history } from 'umi';
-const CheckboxGroup = Checkbox.Group;
+import { history } from '@umijs/max';
 
 const VoucherDetail: React.FC = () => {
     const [form] = Form.useForm();
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
@@ -28,7 +27,7 @@ const VoucherDetail: React.FC = () => {
             else {
                 message.error("修改失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -45,7 +44,7 @@ const VoucherDetail: React.FC = () => {
                     form={form}
                     onFinish={onFinish}
                     layout="horizontal"
-                    request={async (params = {}) => {
+                    request={async (_params = {}) => {
                         return await get({ id: urlParamMap["id"] }).then(response => {
                             return {
                                 ...response.data,

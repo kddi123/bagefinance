@@ -1,9 +1,8 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Space } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components';
+import { Card, Form, message } from 'antd';
+import React, { useEffect } from 'react';
 import { create } from '@/services/ant-design-pro/voucherWordConfig';
-import { history } from 'umi';
-const CheckboxGroup = Checkbox.Group;
+import { history } from '@umijs/max';
 
 const Create: React.FC = () => {
     const [form] = Form.useForm();
@@ -22,7 +21,7 @@ const Create: React.FC = () => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 

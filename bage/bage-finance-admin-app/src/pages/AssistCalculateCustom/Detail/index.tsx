@@ -1,23 +1,13 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader, Tooltip, Popconfirm } from 'antd';
+import { ProForm, ProFormText, ProFormSwitch } from '@ant-design/pro-components';
+import { Form, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { getAssistCalculateCateDetail } from '@/services/ant-design-pro/assistCalculateCate';
 import { updateCustom, getCustom } from '@/services/ant-design-pro/assistCalculateSummary';
 
-import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
-
 const AssistCalculateCustomDetail: React.FC<any> = (props) => {
     const [form] = Form.useForm();
     const { p } = props;
-    const [regionData, setRegionData] = useState([]);
-    const [selectedRegionValues, setSelectedRegionValues] = useState([]);
-
-    const [customColumnCount, setCustomColumnCount] = useState(0);
-
-    const [cateName, setCateName] = useState<string>('');
-    const [customColumn, setCustomColumn] = useState([]);
+    const [customColumn, setCustomColumn] = useState<Array<{ columnName: string; columnAlias: string }>>([]);
 
     const onFinish = async (values: any) => {
         let params = {
@@ -33,7 +23,7 @@ const AssistCalculateCustomDetail: React.FC<any> = (props) => {
             else {
                 message.error("修改失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -48,15 +38,14 @@ const AssistCalculateCustomDetail: React.FC<any> = (props) => {
             form={form}
             onFinish={onFinish}
             layout="horizontal"
-            request={async (params = {}) => {
+            request={async () => {
                // message.success(2)
 
                 return await getAssistCalculateCateDetail({ "id": p.cateId }).then(response => {
                     setCustomColumn(response.data?.customerColumnConfigList);
                     return getCustom({ "id": p.id }).then(detailResponse => {
                         // 遍历 customerColumnConfigList，组合成对象
-                        setCateName(response.data?.name);
-                        const combinedObject = response.data.customerColumnConfigList.reduce((acc, { columnName, columnAlias }) => {
+                        const combinedObject = response.data.customerColumnConfigList.reduce((acc: Record<string, string>, { columnName }: { columnName: string; columnAlias: string }) => {
                             acc[columnName] = detailResponse.data[columnName] || ""; // 使用详情接口返回的值填充文本框
                             return acc;
                         }, { name: detailResponse.data?.name, code: detailResponse.data?.code, notes: detailResponse.data?.notes });

@@ -1,15 +1,11 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader, Tooltip, Popconfirm } from 'antd';
+import { ProForm, ProFormText } from '@ant-design/pro-components';
+import { Form, Button, message } from 'antd';
 import React, { useState, useEffect } from 'react';
-import { create, update } from '@/services/ant-design-pro/assistCalculateCate';
-import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
+import { create } from '@/services/ant-design-pro/assistCalculateCate';
 import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const AssistCalculateCateCreate: React.FC<any> = (props) => {
     const [form] = Form.useForm();
-    const [regionData, setRegionData] = useState([]);
-    const [selectedRegionValues, setSelectedRegionValues] = useState([]);
 
     const [customColumnCount, setCustomColumnCount] = useState(0);
 
@@ -28,11 +24,11 @@ const AssistCalculateCateCreate: React.FC<any> = (props) => {
             ...values,
         };
         console.log(params);
-        const allValues = form.getFieldsValue();
+        const allValues: Record<string, string> = form.getFieldsValue();
         // 从 allValues 中提取自定义列的值
         const customColumnValues = Object.keys(allValues)
             .filter((key) => key.startsWith('c'))
-            .reduce((acc, key) => {
+            .reduce((acc: Record<string, string>, key) => {
                 if (key === "c_code" || key === "c_name" || key === "c_notes" || key === "c_mnemonicCode") {
                     const modifiedKey = key.slice(2); // 移除 'c_' 前缀
                     acc[modifiedKey] = allValues[key];
@@ -53,7 +49,7 @@ const AssistCalculateCateCreate: React.FC<any> = (props) => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 

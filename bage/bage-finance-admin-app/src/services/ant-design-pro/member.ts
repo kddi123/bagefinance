@@ -1,6 +1,5 @@
 
 import { request } from '@umijs/max';
-import { message } from 'antd';
 
 /** 获取用户列表 GET /user/listMember */
 export async function listMember(
@@ -38,7 +37,7 @@ export async function loginOut(
 /** 获取用户列表 GET /searchMemberManage/searchMemberManage */
 export async function searchMemberManage(
   params: {
-    name?: string;
+    [key: string]: any;
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/memberManage/searchMemberManage', {
@@ -53,7 +52,7 @@ export async function searchMemberManage(
 /** 获取用户列表 POST /searchMemberManage/updateDisable */
 export async function updateDisable(
   params: {
-    name?: string;
+    [key: string]: any;
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/memberManage/updateDisable', {
@@ -68,12 +67,7 @@ export async function updateDisable(
 /** 绑定角色 POST /memberManage/bindRoleIds */
 export async function bindRoleIds(
   params: {
-    id?:number;
-    // query
-    /** 当前的页码 */
-    bindRoleIds?: [];
-    /** 页面的容量 */
-    unBindRoleIds?: [];
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {

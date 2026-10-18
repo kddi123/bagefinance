@@ -1,30 +1,15 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Space, Tag, Switch, Modal, message } from 'antd';
 import { useRef, useState } from 'react';
-import request from 'umi-request';
 import { accountBookList, disableAccountBook, delAccountBook } from '@/services/ant-design-pro/accountBook';
-import styles from './index.less';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
-type GithubIssueItem = {
-    url: string;
-    id: number;
-    number: number;
-    title: string;
-    labels: {
-        name: string;
-        color: string;
-    }[];
-    state: string;
-    comments: number;
-    created_at: string;
-    updated_at: string;
-    closed_at?: string;
-    disable?: boolean;
-};
 const AccountList: React.FC = () => {
+    const actionRef = useRef<ActionType>();
+    const [dataSource, setDataSource] = useState<API.ListAccountBookVoItem[]>();
+
     const columns: ProColumns<API.ListAccountBookVoItem>[] = [
         {
             title: <strong>编号</strong>,
@@ -93,7 +78,7 @@ const AccountList: React.FC = () => {
                 true: { text: '禁用' },
             },
             search: true,
-            render: (text, record, _, action) => (
+            render: (text, record) => (
                 <Space>
                     <Switch checkedChildren="启用" unCheckedChildren="禁用" checked={!record.disable} onChange={(checked: boolean) => {
                         console.log("禁用或启用：" + record.id);
@@ -190,8 +175,6 @@ const AccountList: React.FC = () => {
             ],
         },
     ];
-    const actionRef = useRef<ActionType>();
-    const [dataSource, setDataSource] = useState<API.ListAccountBookVoItem[]>();
 
     return (
         <PageContainer>

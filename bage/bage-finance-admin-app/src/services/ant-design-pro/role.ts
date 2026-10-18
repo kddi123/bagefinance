@@ -117,8 +117,8 @@ export async function createRole(
 export async function roleBindMenu(
   params: {
     roleId?: number;
-    bindMenuIds?: [];
-    unBindMenuIds?: []
+    bindMenuIds?: any[];
+    unBindMenuIds?: any[];
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/sysRole/roleBindMenu', {
@@ -132,8 +132,8 @@ export async function roleBindMenu(
 export async function roleBindResource(
   params: {
     roleId?: number;
-    bindResourceIds?: [];
-    unBindResourceIds?: []
+    bindResourceIds?: any[];
+    unBindResourceIds?: any[];
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/sysRole/roleBindResource', {

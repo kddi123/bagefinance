@@ -1,11 +1,11 @@
 import { ExclamationCircleOutlined, PlusOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns, ProFormDatePicker, ProFormSelect } from '@ant-design/pro-components';
-import { ProTable, TableDropdown, ProFormText, ProForm } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Switch, Modal, message, Tag, Select, DatePicker, Drawer } from 'antd';
+import { ProTable, ProFormText, ProForm } from '@ant-design/pro-components';
+import { Button, Space, Switch, Modal, message, Select, DatePicker, Drawer } from 'antd';
 
-import React, { useState, useEffect, useRef } from 'react';
-import request from 'umi-request';
+import React, { useState, useRef } from 'react';
 import { list, bindRoleIds as bindRoleId, get, update } from '@/services/ant-design-pro/tenant';
+import { del as delVoucherWord, updateDefaultFlag } from '@/services/ant-design-pro/voucherWordConfig';
 import { searchMember } from '@/services/ant-design-pro/member';
 import { listRole } from '@/services/ant-design-pro/role';
 
@@ -20,15 +20,17 @@ export default () => {
     const [selectedTenantLevel, setSelectedTenantLevel] = useState<string | undefined>(undefined);
     const [openRole, setOpenRole] = useState(false);
     const [tenantId, setTenantId] = useState(Number);
-    const [selectedRoleRowKeys, setSelectedRoleRowKeys] = useState([]);
-    const [checkStrictly, setCheckStrictly] = useState(false);
-    const [roleData, setRoleData] = useState([]);
-    const [bindRoleIds, setBindRoleIds] = useState([]);
-    const [unBindRoleIds, setUnBindRoleIds] = useState([]);
-    const [copySelectedRoleRowKeys, setCopySelectedRoleRowKeys] = useState([]);
+    const [selectedRoleRowKeys, setSelectedRoleRowKeys] = useState<any[]>([]);
+    const [checkStrictly] = useState(false);
+    const [roleData, setRoleData] = useState<any[]>([]);
+    const [bindRoleIds, setBindRoleIds] = useState<any[]>([]);
+    const [unBindRoleIds, setUnBindRoleIds] = useState<any[]>([]);
+    const [copySelectedRoleRowKeys, setCopySelectedRoleRowKeys] = useState<any[]>([]);
     const [openEditTenant, setOpenEditTenant] = useState(false);
     const [editForm] = ProForm.useForm();
     const actionRef = useRef<ActionType>();
+
+    let onListRole: (id: number) => Promise<void>;
 
     const onCloseTenant = async () => {
         setOpenEditTenant(false);
@@ -78,24 +80,17 @@ export default () => {
     //搜索辅助核算
     const onSearchMembers = (name: string) => {
         setMembersOptions([]);
-        searchMember({ name: name }).then(response => {
-            const dataArray = response.data.map(data => ({
+        searchMember({ name: name }).then((response: any) => {
+            const dataArray = response.data.map((data: any) => ({
                 value: data.id,
                 label: data.nickName + '(' + data.name + ')'
             }));
             setMembersOptions(dataArray);
         });
     }
-    interface DataType {
-        key: React.ReactNode;
-        name: string;
-        age: number;
-        address: string;
-        children?: DataType[];
-    }
-    const rowSelectionRole: TableRowSelection<DataType> = {
+    const rowSelectionRole: TableRowSelection<any> = {
         selectedRowKeys: selectedRoleRowKeys,
-        onChange: (selectedRowKeys, selectedRows) => {
+        onChange: (selectedRowKeys, _selectedRows) => {
             setSelectedRoleRowKeys(selectedRowKeys);
             // //新绑定的菜单
             let bindRoleId = selectedRowKeys.filter(p => !copySelectedRoleRowKeys || !copySelectedRoleRowKeys.includes(p));
@@ -138,18 +133,18 @@ export default () => {
             ellipsis: true,
             search: true,
             valueType: 'select',
-            renderFormItem: (_, { type, defaultRender, ...rest }) => {
+            renderFormItem: (_field, _config) => {
                 return <Select
                     // mode="tags"
                     labelInValue
                     showSearch={true}
-                    filterOption={(input, option) => {
+                    filterOption={(input: any, option: any) => {
                         //忽略大小写
-                        return option.label.toLowerCase().includes(input.toLowerCase());
+                        return option?.label?.toLowerCase().includes(input.toLowerCase());
                     }}
-                    onFocus={(value) => { onSearchMembers(""); }}
-                    onSearch={(value) => { onSearchMembers(value); }}
-                    onChange={(value) => { setSelectedMemberId(value.value); }} // 添加此处，更新选中的租户管理员的值
+                    onFocus={() => { onSearchMembers(""); }}
+                    onSearch={(value: any) => { onSearchMembers(value); }}
+                    onChange={(value: any) => { setSelectedMemberId(value.value); }} // 添加此处，更新选中的租户管理员的值
                     options={membersOptions}
                 />;
 
@@ -163,16 +158,16 @@ export default () => {
             ellipsis: true,
             search: true,
             valueType: 'select',
-            renderFormItem: (_, { type, defaultRender, ...rest }) => {
+            renderFormItem: (_field, _config) => {
                 return <Select
                     // mode="tags"
                     labelInValue
                     showSearch={true}
-                    filterOption={(input, option) => {
+                    filterOption={(input: any, option: any) => {
                         //忽略大小写
-                        return option.label.toLowerCase().includes(input.toLowerCase());
+                        return option?.label?.toLowerCase().includes(input.toLowerCase());
                     }}
-                    onChange={(value) => { setSelectedTenantLevel(value.value); }} // 添加此处，更新选中的租户管理员的值
+                    onChange={(value: any) => { setSelectedTenantLevel(value.value); }} // 添加此处，更新选中的租户管理员的值
                     options={[
                         {
                             value: '0',
@@ -206,7 +201,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: true,
-            renderFormItem: (_, { type, defaultRender, ...rest }) => {
+            renderFormItem: () => {
                 return <RangePicker />;
 
             },
@@ -222,12 +217,12 @@ export default () => {
             search: false,
             render: (text, record, _, action) => (
                 <Space>
-                    <Switch disabled={record.defaultFlag} checkedChildren="是" unCheckedChildren="否" checked={!record.disable} onChange={(checked: boolean) => {
+                    <Switch disabled={record.defaultFlag} checkedChildren="是" unCheckedChildren="否" checked={!record.disable} onChange={(_checked: boolean) => {
                         updateDefaultFlag({ id: record.id })
-                            .then(response => {
+                            .then(() => {
                                 action?.reload();
                             })
-                            .catch(error => {
+                            .catch(() => {
                                 action?.reload();
                             });
                     }} />
@@ -249,14 +244,9 @@ export default () => {
                             cancelText: '取消',
                             onOk: async () => {
                                 console.log("删除：" + record.id);
-                                await del({ id: record.id })
-                                    .then(response => {
-                                        if (response.data) {
-                                            action?.reload();
-                                        }
-                                        else {
-                                            message.error("删除失败");
-                                        }
+                                await delVoucherWord({ id: record.id })
+                                    .then(() => {
+                                        action?.reload();
                                     })
                                     .catch(error => {
                                         console.log(error);
@@ -269,10 +259,10 @@ export default () => {
                     </Link>
                 )
                 return [
-                    <Link to={"#"} onClick={() => { onOpenEditTenant(record.id) }}>
+                    <Link to={"#"} onClick={() => { onOpenEditTenant(record.id) }} key="edit">
                         编辑
                     </Link>,
-                    (record.tenantLevel === 1000) && (<Link to={"#"} onClick={() => { onOpenRole(record.id) }}>
+                    (record.tenantLevel === 1000) && (<Link to={"#"} onClick={() => { onOpenRole(record.id) }} key="bindRole">
                         绑定角色
                     </Link>),
                     delLink
@@ -281,7 +271,7 @@ export default () => {
             }
         },
     ];
-    const onListRole = async (id: number) => {
+    onListRole = async (id: number) => {
         //查询当前角色已经绑定的资源
         get({ id: id }).then(response => {
             if (response.data.sysRoleIds) {
@@ -339,8 +329,8 @@ export default () => {
                 actionRef={actionRef}
                 cardBordered
                 bordered
-                request={async (params = {}, sort, filter) => {
-                    console.log(sort, filter);
+                request={async (params: any = {}, _sort, _filter) => {
+                    console.log(_sort, _filter);
                     let beginExpireTime;
                     let endExpireTime;
                     if (params.expireTime) {
@@ -440,7 +430,7 @@ export default () => {
                         },
                     }}
                     rowKey="id"
-                    pagination={true}
+                    pagination={{ pageSize: 20 }}
                     search={false} // 关闭搜索功能
                     options={{
                         density: false, // 不显示密度调整按钮
@@ -478,7 +468,7 @@ export default () => {
                     labelCol={{ span: 6 }}   // 控制 label 的布局，可以调整 span 的值
                     wrapperCol={{ span: 14 }} // 控制包裹内容的布局，可以调整 span 的值
                     submitter={{
-                        render: (_, dom) => (
+                        render: (_: any) => (
                             <ProForm.Item
                                 wrapperCol={{ offset: 6, span: 14 }}
                                 colon={false}

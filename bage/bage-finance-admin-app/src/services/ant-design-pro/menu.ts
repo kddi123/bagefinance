@@ -5,7 +5,7 @@ import { request } from '@umijs/max';
 /** 获取树形菜单 GET /sysMenu/listTreeMenu */
 export async function listTreeMenu(
   params: {
-    title?: string;
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {

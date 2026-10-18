@@ -57,7 +57,7 @@ const initTreeData: DataNode[] = [
 
 
 
-const FileIndex: React.FC = (props1, onParamsChange) => {
+const FileIndex: React.FC<any> = (props1, onParamsChange) => {
     const { p } = props1;
     const [fileList, setFileList] = useState([]);
     const [treeData, setTreeData] = useState(initTreeData);

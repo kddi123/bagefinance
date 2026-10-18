@@ -1,8 +1,8 @@
 import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormDatePicker } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message } from 'antd';
+import { Card, Form, message } from 'antd';
 import React from 'react';
 import { addAccountBook, listHangYe, listKuaiJiZhunZe } from '@/services/ant-design-pro/accountBook';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 const AccountCreate: React.FC = () => {
     const [form] = Form.useForm();
@@ -15,7 +15,7 @@ const AccountCreate: React.FC = () => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => { 
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -48,7 +48,7 @@ const AccountCreate: React.FC = () => {
                     </ProForm.Group>
                     <ProForm.Group>
                         <ProFormSelect width="md" name="industryId" label="行业"
-                            request={async (params = {}) => {
+                            request={async () => {
                                 return await listHangYe().then(response => {
                                     return response.data?.map(item => ({
                                         label: item.dataValue,
@@ -85,7 +85,7 @@ const AccountCreate: React.FC = () => {
                             placeholder="请选择会计准则"
                             label="会计准则"
                             rules={[{ required: true }]}
-                            request={async (params = {}) => {
+                            request={async () => {
                                 return await listKuaiJiZhunZe().then(response => {
                                     return response.data?.map(item => ({
                                         label: item.dataValue,

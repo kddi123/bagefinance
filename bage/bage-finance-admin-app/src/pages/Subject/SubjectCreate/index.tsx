@@ -1,23 +1,23 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Space } from 'antd';
+import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch } from '@ant-design/pro-components';
+import { Card, Form, message, Checkbox } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { getSubject, createSubject } from '@/services/ant-design-pro/subject';
 import { listAssistCalculateCate } from '@/services/ant-design-pro/assistCalculateCate';
 import { list } from '@/services/ant-design-pro/currencyConfig';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 const CheckboxGroup = Checkbox.Group;
 
 const SubjectCreate: React.FC = () => {
     const [form] = Form.useForm();
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
     // 用于存储从接口获取的选项数据
-    const [assistCalculateCateOptions, setAssistCalculateCateOptions] = useState([]);
-    const [assistCalculateCateRequired, setAssistCalculateCateRequired] = useState([]);
-    const [assistCurrencyConfigOptions, setAssistCurrencyConfigOptions] = useState([]);
+    const [assistCalculateCateOptions, setAssistCalculateCateOptions] = useState<any[]>([]);
+    const [assistCalculateCateRequired, setAssistCalculateCateRequired] = useState<any[]>([]);
+    const [assistCurrencyConfigOptions, setAssistCurrencyConfigOptions] = useState<any[]>([]);
     const [enableForeignCurrencyConfig, setEnableForeignCurrencyConfig] = useState(false);
     const [enableAssistCalculateConfigs, setEnableAssistCalculateConfigs] = useState(false);
     const [enableNumberCalculateConfig, setEnableNumberCalculateConfig] = useState(false);
@@ -32,15 +32,15 @@ const SubjectCreate: React.FC = () => {
     };
 
     function mergeArrays(a: number[], b: number[]): AssistCalculateConfig[] {
-        a = a ? a : [];
-        b = b ? b : [];
+        const arrA = a ? a : [];
+        const arrB = b ? b : [];
         const mergedArray: AssistCalculateConfig[] = [];
 
         // 处理 a 数组
-        for (const idA of a) {
+        for (const idA of arrA) {
             mergedArray.push({
                 assistCalculateId: idA,
-                requiredFlag: b.includes(idA),
+                requiredFlag: arrB.includes(idA),
             });
         }
 
@@ -81,34 +81,34 @@ const SubjectCreate: React.FC = () => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
     };
-    const fetchAssistCalculateCateOptions = async (defaultCheckedValues: []) => {
+    const fetchAssistCalculateCateOptions = async (defaultCheckedValues: any[]) => {
         await listAssistCalculateCate().then(response => {
-            setAssistCalculateCateOptions(response.data.map(item => ({ label: item.name, value: item.id.toString() })));
+            setAssistCalculateCateOptions(response.data.map((item: any) => ({ label: item.name, value: item.id.toString() })));
             setAssistCalculateCateRequired(response.data
-                .filter(item => defaultCheckedValues.map(checkedItem => checkedItem.assistCalculateId).includes(item.id))
-                .map(item => ({ label: item.name, value: item.id.toString() })));
-            form.setFieldsValue({ assistCalculateCate: defaultCheckedValues.map(item => (item.assistCalculateId.toString())) });
+                .filter((item: any) => defaultCheckedValues.map((checkedItem: any) => checkedItem.assistCalculateId).includes(item.id))
+                .map((item: any) => ({ label: item.name, value: item.id.toString() })));
+            form.setFieldsValue({ assistCalculateCate: defaultCheckedValues.map((item: any) => (item.assistCalculateId.toString())) });
 
 
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
     };
-    const fetchCurrencyConfigOptions = async (defaultCheckedValues: []) => {
-        const defaultCheckedStrings = defaultCheckedValues?defaultCheckedValues.map(value => value.toString()):[];
+    const fetchCurrencyConfigOptions = async (defaultCheckedValues: any[]) => {
+        const defaultCheckedStrings = defaultCheckedValues?defaultCheckedValues.map((value: any) => value.toString()):[];
         await list().then(response => {
-            setAssistCurrencyConfigOptions(response.data.map(item => ({
+            setAssistCurrencyConfigOptions(response.data.map((item: any) => ({
                 label: item.name,
                 value: item.id.toString(),
                 disabled: defaultCheckedStrings.includes(item.id.toString()),
             })));
-            form.setFieldsValue({ assistCheckboxGroup: defaultCheckedValues.map(value => value.toString()) });
-        }).catch(error => {
+            form.setFieldsValue({ assistCheckboxGroup: defaultCheckedValues.map((value: any) => value.toString()) });
+        }).catch(() => {
             //console.log(error);
         });
     };
@@ -126,7 +126,7 @@ const SubjectCreate: React.FC = () => {
     };
     const onAssistCalculateCateChange = () => {
         setAssistCalculateCateRequired(assistCalculateCateOptions
-            .filter(item => form.getFieldsValue().assistCalculateCate.includes(item.value)));
+            .filter((item: any) => form.getFieldsValue().assistCalculateCate.includes(item.value)));
     }
     // 在组件加载时调用接口
     useEffect(() => {
@@ -139,9 +139,9 @@ const SubjectCreate: React.FC = () => {
                     form={form}
                     onFinish={onFinish}
                     layout="vertical"
-                    request={async (params = {}) => {
+                    request={async () => {
                         console.log(urlParamMap)
-                        return await getSubject({ id: urlParamMap["id"], pid: urlParamMap["pid"] }).then(response => {
+                        return await getSubject({ id: Number(urlParamMap["id"]), pid: Number(urlParamMap["pid"]) }).then(response => {
                             fetchAssistCalculateCateOptions(response.data.subjectCalculateConfigVo.assistCalculateConfigs);
                             fetchCurrencyConfigOptions(response.data.subjectCalculateConfigVo.foreignCurrencyConfig.currencyConfigIds);
                             setEnableNumberCalculateConfig(response.data.subjectCalculateConfigVo.enableNumberCalculateConfig);
@@ -217,8 +217,8 @@ const SubjectCreate: React.FC = () => {
                                 checkedChildren: '启用数量核算',
                                 unCheckedChildren: '禁用数量核算',
                                 defaultChecked: false, // 设置默认选中状态
+                                onChange: handleSwitchEnableNumberCalculateConfig,
                             }}
-                            onChange={handleSwitchEnableNumberCalculateConfig}
                             disabled={parentEnableNumberCalculateConfig}
                         />
                         <ProFormText
@@ -240,8 +240,8 @@ const SubjectCreate: React.FC = () => {
                                 checkedChildren: '启用辅助核算',
                                 unCheckedChildren: '禁用辅助核算',
                                 defaultChecked: false, // 设置默认选中状态
+                                onChange: handleSwitchEnableAssistCalculateConfigs,
                             }}
-                            onChange={handleSwitchEnableAssistCalculateConfigs}
                             disabled={parentEnableAssistCalculateConfigs}
                         />
                         <ProForm.Item style={{ marginTop: 2 }} hidden={!enableAssistCalculateConfigs} name="assistCalculateCate">
@@ -267,8 +267,8 @@ const SubjectCreate: React.FC = () => {
                                 checkedChildren: '启用外币核算',
                                 unCheckedChildren: '禁用外币核算',
                                 defaultChecked: false, // 设置默认选中状态
+                                onChange: handleSwitchEnableForeignCurrencyConfig,
                             }}
-                            onChange={handleSwitchEnableForeignCurrencyConfig}
                             disabled={parentEnableForeignCurrencyConfig}
                         />
                         <ProForm.Item style={{ marginTop: 2 }} name="assistCheckboxGroup" hidden={!enableForeignCurrencyConfig}>

@@ -1,13 +1,10 @@
 import React from 'react';
 import {
     SettingOutlined,
-    PlusOutlined,
-    DeleteOutlined,
-    RestOutlined,
     FundOutlined,
-    LinkOutlined, AccountBookOutlined, SmileOutlined, FileTextOutlined, PieChartOutlined, FileExcelOutlined, CreditCardOutlined, TransactionOutlined, UploadOutlined, FileProtectOutlined, HomeOutlined, BankOutlined, ReadOutlined, ToolOutlined, HistoryOutlined
+    AccountBookOutlined, SmileOutlined, FileTextOutlined, PieChartOutlined, FileExcelOutlined, CreditCardOutlined, TransactionOutlined, UploadOutlined, FileProtectOutlined, HomeOutlined, BankOutlined, ReadOutlined, ToolOutlined
 } from '@ant-design/icons';
-export const IconMap = {
+export const IconMap: Record<string, React.ReactNode> = {
     AccountBookOutlined: <AccountBookOutlined />,
     FileTextOutlined: <FileTextOutlined />,
     Smile: <SmileOutlined />,

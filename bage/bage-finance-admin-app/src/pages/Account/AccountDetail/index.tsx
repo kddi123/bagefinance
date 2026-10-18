@@ -1,14 +1,11 @@
 import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormDatePicker } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message } from 'antd';
-import { useEffect, useState } from 'react';
+import { Card, Form } from 'antd';
 import { getAccountBook, listHangYe, listKuaiJiZhunZe } from '@/services/ant-design-pro/accountBook';
-import { history, useParams } from 'umi';
-import { response } from 'express';
 
 const AccountDetail: React.FC = () => {
     const [form] = Form.useForm();
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
@@ -19,7 +16,7 @@ const AccountDetail: React.FC = () => {
                     disabled
                     form={form}
                     submitter={{ resetButtonProps: { style: { display: 'none', } }, submitButtonProps: { style: { display: 'none', } } }}
-                    request={async (params = {}) => {
+                    request={async () => {
                         console.log(urlParamMap)
                         return await getAccountBook(urlParamMap).then(response => {
                             return {
@@ -52,7 +49,7 @@ const AccountDetail: React.FC = () => {
                     </ProForm.Group>
                     <ProForm.Group>
                         <ProFormSelect width="md" name="industryId" label="行业"
-                            request={async (params = {}) => {
+                            request={async () => {
                                 return await listHangYe().then(response => {
                                     return response.data?.map(item => ({
                                         label: item.dataValue,
@@ -90,7 +87,7 @@ const AccountDetail: React.FC = () => {
                             placeholder="请选择会计准则"
                             label="会计准则"
                             rules={[{ required: true }]}
-                            request={async (params = {}) => {
+                            request={async () => {
                                 return await listKuaiJiZhunZe().then(response => {
                                     return response.data?.map(item => ({
                                         label: item.dataValue,

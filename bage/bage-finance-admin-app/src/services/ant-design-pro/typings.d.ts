@@ -73,8 +73,7 @@ declare namespace API {
     errorMessage?: Map<string, string>;
     showType?: ErrorShowType;
   }
-  type
-  FakeCaptcha = ResponseStructure & {
+  type FakeCaptcha = ResponseStructure & {
     data?: boolean;
   };
 

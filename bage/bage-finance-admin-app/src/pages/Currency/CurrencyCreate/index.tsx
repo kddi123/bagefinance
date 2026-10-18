@@ -1,8 +1,8 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Space } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { list, create, get } from '@/services/ant-design-pro/currencyConfig';
-import { history } from 'umi';
+import { PageContainer, ProForm, ProFormText } from '@ant-design/pro-components';
+import { Card, Form, message } from 'antd';
+import React, { useEffect } from 'react';
+import { create } from '@/services/ant-design-pro/currencyConfig';
+import { history } from '@umijs/max';
 
 const CurrencyCreate: React.FC = () => {
     const [form] = Form.useForm();
@@ -20,7 +20,7 @@ const CurrencyCreate: React.FC = () => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 

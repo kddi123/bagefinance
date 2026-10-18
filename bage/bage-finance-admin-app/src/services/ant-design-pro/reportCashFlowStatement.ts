@@ -5,8 +5,7 @@ import { request } from '@umijs/max';
 /** 租户列表 GET /tenant/get */
 export async function getReport(
   params: {
-    /** 当前的页码 */
-    id?: number;
+    [key: string]: any;
   },
   options?: { [key: string]: any },
 ) {

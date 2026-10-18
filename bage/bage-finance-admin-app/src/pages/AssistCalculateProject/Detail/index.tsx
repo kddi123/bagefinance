@@ -1,36 +1,17 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox, ProFormDatePicker } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader } from 'antd';
-import React, { useState, useEffect } from 'react';
+import { ProForm, ProFormText, ProFormSwitch, ProFormDatePicker } from '@ant-design/pro-components';
+import { Form, message } from 'antd';
+import React, { useEffect } from 'react';
 import { getProject, updateProject } from '@/services/ant-design-pro/assistCalculateSummary';
-import { history } from 'umi';
-import { response } from 'express';
 
 const AssistCalculateProjectDetail: React.FC<any> = (props) => {
     const [form] = Form.useForm();
     const { p } = props;
 
-    const [regionData, setRegionData] = useState([]);
-    const [selectedRegionValues, setSelectedRegionValues] = useState([]);
-
     const onFinish = async (values: any) => {
-        // let provinceCityCountryCode: string[] = form.getFieldValue("provinceCityCountryCode").split(',');
-
-        let provinceCode = "";
-        let cityCode = "";
-        let countyCode = "";
-        if (selectedRegionValues.length > 0) {
-            provinceCode = selectedRegionValues[0];
-            cityCode = selectedRegionValues[1];
-            countyCode = selectedRegionValues[2];
-        }
-
         let params = {
             ...values,
             id: p.id,
-            disable: !form.getFieldValue("disable"),
-            provinceCode: provinceCode,
-            cityCode: cityCode,
-            countyCode: countyCode
+            disable: !form.getFieldValue("disable")
         };
         console.log(params);
         await updateProject(params).then(response => {
@@ -41,7 +22,7 @@ const AssistCalculateProjectDetail: React.FC<any> = (props) => {
             else {
                 message.error("修改失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -55,7 +36,7 @@ const AssistCalculateProjectDetail: React.FC<any> = (props) => {
             form={form}
             onFinish={onFinish}
             layout="vertical"
-            request={async (params = {}) => {
+            request={async () => {
                 let data = await getProject({ id: p.id }).then(response => {
                     return { ...response.data };
                 });

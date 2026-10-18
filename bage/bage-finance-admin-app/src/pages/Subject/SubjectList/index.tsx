@@ -1,11 +1,10 @@
-import { ExclamationCircleOutlined, PlusOutlined, ExportOutlined } from '@ant-design/icons';
+import { ExclamationCircleOutlined, ExportOutlined } from '@ant-design/icons';
 import { ActionType, PageContainer, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message, Tabs } from 'antd';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Space, Switch, Modal, message, Tabs } from 'antd';
 import { useRef, useState } from 'react';
-import request from 'umi-request';
 import { list, disable, del, download } from '@/services/ant-design-pro/subject';
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 
 const { TabPane } = Tabs;
 
@@ -85,10 +84,10 @@ const SubjectList: React.FC = () => {
                     <Switch checkedChildren="启用" unCheckedChildren="禁用" disabled={record.parentSubjectDisable} checked={!record.disable} onChange={(checked: boolean) => {
                         console.log("禁用或启用：" + record.id);
                         disable({ id: record.id, disable: !checked })
-                            .then(response => {
+                            .then(() => {
                                 action?.reload();
                             })
-                            .catch(error => {
+                            .catch(() => {
                                 action?.reload();
                             });
                     }} />
@@ -112,7 +111,7 @@ const SubjectList: React.FC = () => {
                             onOk: async () => {
                                 console.log("删除：" + record.id);
                                 await del({ id: record.id })
-                                    .then(response => {
+                                    .then(() => {
                                         action?.reload();
                                     })
                                     .catch(error => {
@@ -153,7 +152,7 @@ const SubjectList: React.FC = () => {
     // 点击按钮触发下载
     const onDownload = async () => {
         try {
-            const response = await download();
+            await download();
         } catch (error) {
             console.error('下载失败:', error);
             message.error('下载失败');

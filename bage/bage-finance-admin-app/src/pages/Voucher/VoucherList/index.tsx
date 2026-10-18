@@ -1,10 +1,9 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox, recordKeyToString } from '@ant-design/pro-components';
-import { Avatar, List, Radio, Space, Card, Row, Col, Affix, Checkbox, Form, Button, Input, DatePicker, Select, InputNumber, message, Modal }
+import { PageContainer } from '@ant-design/pro-components';
+import { List, Space, Card, Row, Col, Affix, Checkbox, Form, Button, Input, DatePicker, Select, InputNumber, message, Modal }
     from 'antd';
-import { history } from '@umijs/max';
-import { Link } from 'react-router-dom';
+import { Link } from '@umijs/max';
 import { DownOutlined, ExclamationCircleOutlined } from '@ant-design/icons';
 
 import { list, del } from '@/services/ant-design-pro/voucher';
@@ -12,40 +11,27 @@ import { list as listVoucherWordConfig } from '@/services/ant-design-pro/voucher
 import { listByCateAndCodeAndName } from '@/services/ant-design-pro/subject';
 import { listMember } from '@/services/ant-design-pro/member';
 
-
-
 import moment from 'moment';
 
 import { digitUppercase } from "pixiu-number-toolkit";
 
 const { RangePicker } = DatePicker;
 
-import { formatNumber, formatAmount } from '@/common';
+import { formatAmount } from '@/common';
 
 import './index.less'; // 导入CSS样式
 
-type PaginationPosition = 'top' | 'bottom' | 'both';
-
-type PaginationAlign = 'start' | 'center' | 'end';
-
-const positionOptions = ['top', 'bottom', 'both'];
-
-const alignOptions = ['start', 'center', 'end'];
-
 const VoucherList: React.FC = () => {
-    const [position, setPosition] = useState<PaginationPosition>('bottom');
-    const [align, setAlign] = useState<PaginationAlign>('center');
     const [form] = Form.useForm();
     const [expand, setExpand] = useState(false);
     const [data, setData] = useState([]); // 原始的备注值
     const [pagination, setPagination] = useState({ current: 1, pageSize: 10, total: 0 });
     const [voucherWordConfigOptions, setVoucherWordConfigOptions] = useState([]);
-    const [defaultSelectVoucherWordConfigValue, setDefaultSelectVoucherWordConfigValue] = useState();
+    const [_defaultSelectVoucherWordConfigValue, setDefaultSelectVoucherWordConfigValue] = useState();
     const [subjectData, setSubjectData] = useState([]);
-    const [selectSubjectData, setSelectSubjectData] = useState();
+    const [_selectSubjectData, setSelectSubjectData] = useState();
     const [memberData, setMemberData] = useState([]);
-    const [selectMemberData, setSelectMemberData] = useState();
-
+    const [_selectMemberData, setSelectMemberData] = useState();
 
     //查询科目列表
     const onSearchVoucher = async (params?: any) => {
@@ -71,7 +57,7 @@ const VoucherList: React.FC = () => {
         try {
             await listVoucherWordConfig().then(response => {
                 if (response.data) {
-                    const dataArray = response.data.map(data => ({
+                    const dataArray = response.data.map((data: any) => ({
                         value: data.id,
                         label: data.voucherWord
                     }));
@@ -80,7 +66,7 @@ const VoucherList: React.FC = () => {
                         setDefaultSelectVoucherWordConfigValue(dataArray[0])
                     }
                 }
-            }).catch(error => {
+            }).catch(() => {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -91,13 +77,13 @@ const VoucherList: React.FC = () => {
         try {
             await listByCateAndCodeAndName({}).then(response => {
                 if (response.data) {
-                    const dataArray = response.data.map(data => ({
+                    const dataArray = response.data.map((data: any) => ({
                         value: data.id,
                         label: data.code + " " + data.fullName
                     }));
                     setSubjectData(dataArray);
                 }
-            }).catch(error => {
+            }).catch(() => {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -108,13 +94,13 @@ const VoucherList: React.FC = () => {
         try {
             await listMember({}).then(response => {
                 if (response.data) {
-                    const dataArray = response.data.map(data => ({
+                    const dataArray = response.data.map((data: any) => ({
                         value: data.id,
                         label: data.nickName
                     }));
                     setMemberData(dataArray);
                 }
-            }).catch(error => {
+            }).catch(() => {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -321,7 +307,7 @@ const VoucherList: React.FC = () => {
                         onChange: handlePaginationChange,
                     }} bordered={false}
                     dataSource={data}
-                    renderItem={(item, index) => (
+                    renderItem={(item: any, _index: any) => (
                         <List.Item>
                             <List.Item.Meta
                                 // title={ }
@@ -373,7 +359,7 @@ const VoucherList: React.FC = () => {
                                             </Row>
                                             {/* 遍历 voucherSubjectDetailVoList */}
                                             {
-                                                item.voucherSubjectDetailVoList.map((detailItem, detailIndex) => (
+                                                item.voucherSubjectDetailVoList.map((detailItem: any, detailIndex: any) => (
                                                     <Row className="custom-row" key={detailIndex}>
                                                         <Col span={5}>{detailItem.summary}</Col>
                                                         <Col span={8}>{detailItem.showSubjectName}</Col>

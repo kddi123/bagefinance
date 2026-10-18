@@ -1,47 +1,34 @@
-import { ExclamationCircleOutlined, PlusOutlined, SearchOutlined, InfoCircleOutlined, PrinterOutlined } from '@ant-design/icons';
-import { ActionType, PageContainer, ProColumns, ProFormDatePicker, ProFormSelect, ProFormItem } from '@ant-design/pro-components';
-import { ProTable, TableDropdown, ProFormText, ProForm } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Switch, Modal, message, Tag, Select, DatePicker, Drawer, ConfigProvider, Affix } from 'antd';
+import { PrinterOutlined } from '@ant-design/icons';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ProTable } from '@ant-design/pro-components';
+import { Button, Space, ConfigProvider, Affix } from 'antd';
 
 import React, { useState, useEffect, useRef } from 'react';
-import request from 'umi-request';
-import { getReport, saveFormula, delFormula, listReportFormula } from '@/services/ant-design-pro/reportBalanceSheet';
-import { listByCateAndCodeAndName } from '@/services/ant-design-pro/subject';
+import { getReport } from '@/services/ant-design-pro/reportBalanceSheet';
 
-import { Link } from '@umijs/max';
 import './index.less'
 
-const { RangePicker } = DatePicker;
-import type { TableRowSelection } from 'antd/es/table/interface';
 import moment from 'moment';
 
 export default () => {
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
     const actionRef = useRef<ActionType>();
 
     // 获取当前系统时间，并精确到月份的第一天
-    const [defaultDate, setDefaultDate] = useState(urlParamMap["reportDate"]);
+    const [defaultDate] = useState(urlParamMap["reportDate"]);
     const [isShowToolBar, setIsShowToolBar] = useState(true);
-    const [top, setTop] = React.useState<number>(0);
-
-    interface DataType {
-        key: React.ReactNode;
-        name: string;
-        age: number;
-        address: string;
-        children?: DataType[];
-    }
+    const [top] = React.useState<number>(0);
     const columns: ProColumns[] = [
         {
             title: '资产',
             dataIndex: 'asset',
             ellipsis: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {record.assetFontBold ?
                         <span style={{ fontWeight: 'bold' }}>{record.asset}</span>
@@ -60,7 +47,7 @@ export default () => {
             ellipsis: true,
             width: 40,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 record.assetRowNo ? record.assetRowNo : ""
             ),
         },
@@ -72,7 +59,7 @@ export default () => {
             ellipsis: true,
             width: 60,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.assetTermEndBalance ?
@@ -90,7 +77,7 @@ export default () => {
             ellipsis: true,
             width: 60,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.assetYarBeginBalance ?
@@ -108,7 +95,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.liabilitiesFontBold ?
@@ -127,7 +114,7 @@ export default () => {
             ellipsis: true,
             width: 40,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 record.liabilitiesRowNo ? record.liabilitiesRowNo : ""
             ),
         },
@@ -139,7 +126,7 @@ export default () => {
             ellipsis: true,
             width: 60,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.liabilitiesTermEndBalance ? parseFloat(record.liabilitiesTermEndBalance).toFixed(2).toLocaleString() : ""
@@ -157,7 +144,7 @@ export default () => {
             valueType: 'select',
             width: 60,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.liabilitiesYarBeginBalance ?
@@ -169,7 +156,7 @@ export default () => {
         }
     ];
 
-    const rowClassName = (record, index) => {
+    const rowClassName = (record: any, index: any) => {
         return index % 2 === 0 ? 'even-row' : 'odd-row';
     };
     const print = () => {
@@ -241,7 +228,7 @@ export default () => {
                             rowClassName={rowClassName}
                             cardBordered
                             bordered
-                            request={async (params = {}, sort, filter) => {
+                            request={async () => {
                                 let data = await getReport({ reportDate: moment(defaultDate).format('YYYY-MM-DD 00:00:00') });
                                 return { data: data.data.balanceRows };
                             }}

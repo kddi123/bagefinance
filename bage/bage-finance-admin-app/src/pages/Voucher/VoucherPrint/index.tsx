@@ -1,5 +1,5 @@
-import React, { useRef, useState, useEffect, useLayoutEffect } from 'react';
-import { Button, Card, Modal, Table, Space, Row, Col, Affix, ConfigProvider, message } from 'antd';
+import React, { useRef, useState, useEffect } from 'react';
+import { Button, Table, Space, Affix, ConfigProvider } from 'antd';
 import {
     PrinterOutlined,
 } from '@ant-design/icons';
@@ -19,12 +19,12 @@ interface DataType {
 }
 const VoucherPrint: React.FC = () => {
     const urlParams = new URL(window.location.href).searchParams;
-    const urlParamMap = {};
+    const urlParamMap: Record<string, string> = {};
     for (const [key, value] of urlParams.entries()) {
         urlParamMap[key] = value;
     }
     const tableRef = useRef(null); // 创建一个ref
-    const sharedOnCell = (_: DataType, index: number) => {
+    const sharedOnCell = (_: DataType, _index?: number) => {
         // 判断是否是最后一行
         if (_.key === 0) {
             return { colSpan: 0 };
@@ -38,7 +38,7 @@ const VoucherPrint: React.FC = () => {
             dataIndex: 'summary',
             key: 'summary',
             width: 200,
-            onCell: (_, index) => ({
+            onCell: (_: any, _index: any) => ({
                 // 判断是否是最后一行
                 colSpan: _.key === 0 ? 2 : 1,
             }),
@@ -65,13 +65,13 @@ const VoucherPrint: React.FC = () => {
             render: (text: string) => parseFloat(text).toFixed(2).toLocaleString(), // 保留两位小数并格式化数字
         },
     ];
-    const [top, setTop] = React.useState<number>(0);
+    const [top] = React.useState<number>(0);
     const [isShowToolBar, setIsShowToolBar] = useState(true);
-    const [data, setData] = useState();
-    const [subjectData, setSubjectData] = useState([]);
-    const [subjectTempData, setSubjectTempData] = useState([]);
+    const [data, setData] = useState<any>();
+    const [subjectData, setSubjectData] = useState<any[]>([]);
+    const [subjectTempData, setSubjectTempData] = useState<any[]>([]);
     const [isEnd, setIsEnd] = useState(false);
-    const divRefs = useRef([]); // 创建一个 ref 数组来存储 div 的 ref
+    const divRefs = useRef<React.RefObject<HTMLDivElement>[]>([]); // 创建一个 ref 数组来存储 div 的 ref
     const [currentPage, setCurrentPage] = useState(0);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [currentRow, setCurrentRow] = useState(0);
@@ -99,8 +99,8 @@ const VoucherPrint: React.FC = () => {
         window.addEventListener('afterprint', handleAfterPrint);
         if (subjectTempData.length === 0) {
             get({ id: urlParamMap["id"] }).then((response) => {
-                let temp = [];
-                response.data.voucherSubjectDetailVoList.forEach((content, index) => {
+                let temp: any[] = [];
+                response.data.voucherSubjectDetailVoList.forEach((content: any, _index: any) => {
                     temp.push(content);
                     temp.push(content);
                     temp.push(content);
@@ -114,18 +114,18 @@ const VoucherPrint: React.FC = () => {
                 return;
             }
             const pageSize = 980; // 打印页面的高度
-            let newSubjectData = [];
-            let tArray = [];
-            subjectTempData.forEach((content, index) => {
+            let newSubjectData: any[] = [];
+            let tArray: any[] = [];
+            subjectTempData.forEach((content: any, _index: any) => {
                 newSubjectData.push(content);
             });
 
-            subjectData.forEach((content, index) => {
+            subjectData.forEach((content: any, _index: any) => {
                 tArray.push(content);
             })
             if (currentPage < newSubjectData.length && currentRow < newSubjectData.length) {
                 tArray[currentPage] = newSubjectData.slice(currentIndex, currentRow + 1);
-                tArray[currentPage].push({ "key": 0, "summary": "合计：" + digitUppercase(data.totalAmount), "showSubjectName": '', "debitAmount": parseFloat(data.totalAmount).toFixed(2).toLocaleString(), "creditAmount": parseFloat(data.totalAmount).toFixed(2).toLocaleString() });
+                tArray[currentPage].push({ "key": 0, "summary": "合计：" + digitUppercase(data?.totalAmount), "showSubjectName": '', "debitAmount": parseFloat(data?.totalAmount).toFixed(2).toLocaleString(), "creditAmount": parseFloat(data?.totalAmount).toFixed(2).toLocaleString() });
                 setCurrentRow(currentRow + 1);
             }
             else {
@@ -135,7 +135,7 @@ const VoucherPrint: React.FC = () => {
             if (!divRefs.current[currentPage]) {
                 divRefs.current[currentPage] = React.createRef();
             }
-            if (divRefs.current[currentPage].current) {
+            if (divRefs.current[currentPage]?.current) {
                 if (divRefs.current[currentPage].current.clientHeight > pageSize) {
                     setCurrentIndex(currentRow + 1);
                     setCurrentPage(currentPage + 1);
@@ -163,7 +163,7 @@ const VoucherPrint: React.FC = () => {
                 </Affix>
             )}
             <div ref={tableRef} className='print_voucher'>
-                {data && subjectData.map((content, index) => (
+                {data && subjectData.map((content: any, index: any) => (
                     content ? (
                         <div ref={divRefs.current[index]} key={index} style={{ marginBottom: 10 }}>
                             <Space direction="vertical">

@@ -5,8 +5,7 @@ import { request } from '@umijs/max';
 /** 获取资源列表 POST /adminapi/sysResource/list */
 export async function list(
   params: {
-    name?: string;
-    path?: string;
+    [key: string]: any;
   },
   options?: { [key: string]: any }) {
   return request('/adminapi/sysResource/list', {

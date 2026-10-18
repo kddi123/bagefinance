@@ -1,18 +1,14 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader, Tooltip, Popconfirm } from 'antd';
+import { ProForm, ProFormText, ProFormSwitch } from '@ant-design/pro-components';
+import { Form, message } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { getAssistCalculateCateDetail } from '@/services/ant-design-pro/assistCalculateCate';
 import { createCustom } from '@/services/ant-design-pro/assistCalculateSummary';
-
-import { listRegion } from '@/services/ant-design-pro/system';
-import { history } from 'umi';
-import { PlusOutlined, DeleteOutlined } from '@ant-design/icons';
 
 const AssistCalculateCustomCreate: React.FC<any> = (props) => {
     const [form] = Form.useForm();
     const { p } = props;
 
-    const [customColumn, setCustomColumn] = useState([]);
+    const [customColumn, setCustomColumn] = useState<Array<{ columnName: string; columnAlias: string }>>([]);
     const onFinish = async (values: any) => {
         let params = {
             ...values,
@@ -27,7 +23,7 @@ const AssistCalculateCustomCreate: React.FC<any> = (props) => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 
@@ -42,7 +38,7 @@ const AssistCalculateCustomCreate: React.FC<any> = (props) => {
             form={form}
             onFinish={onFinish}
             layout="horizontal"
-            request={async (params = {}) => {
+            request={async () => {
                 return await getAssistCalculateCateDetail({ "id": p.cateId }).then(response => {
                     setCustomColumn(response.data?.customerColumnConfigList);
                     return customColumn;

@@ -1,8 +1,8 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox, ProFormDatePicker } from '@ant-design/pro-components';
-import { Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message, Checkbox, Cascader } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { createProject, updateProject } from '@/services/ant-design-pro/assistCalculateSummary';
-import { history } from 'umi';
+import { ProForm, ProFormText, ProFormSwitch, ProFormDatePicker } from '@ant-design/pro-components';
+import { Form,message } from 'antd';
+import React, { useEffect } from 'react';
+import { createProject } from '@/services/ant-design-pro/assistCalculateSummary';
+
 
 const AssistCalculateProjectCreate: React.FC<any> = (props) => {
     const [form] = Form.useForm();
@@ -23,7 +23,7 @@ const AssistCalculateProjectCreate: React.FC<any> = (props) => {
             else {
                 message.error("创建失败");
             }
-        }).catch(error => {
+        }).catch(() => {
             //console.log(error);
         });
 

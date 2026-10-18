@@ -1,18 +1,15 @@
-import { ExclamationCircleOutlined, PlusOutlined, SearchOutlined, InfoCircleOutlined, PrinterOutlined } from '@ant-design/icons';
-import { ActionType, PageContainer, ProColumns, ProFormDatePicker, ProFormSelect, ProFormItem } from '@ant-design/pro-components';
-import { ProTable, TableDropdown, ProFormText, ProForm } from '@ant-design/pro-components';
-import { Button, Dropdown, Space, Switch, Modal, message, Tag, Select, DatePicker, Drawer, ConfigProvider } from 'antd';
+import { ExclamationCircleOutlined, SearchOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { ActionType, PageContainer, ProColumns, ProFormSelect, ProFormItem } from '@ant-design/pro-components';
+import { ProTable,  ProForm } from '@ant-design/pro-components';
+import { Button,  Space,  Modal, message, Select, DatePicker, Drawer, ConfigProvider } from 'antd';
 
-import React, { useState, useEffect, useRef } from 'react';
-import request from 'umi-request';
+import React, { useState, useRef } from 'react';
 import { getReport, saveFormula, delFormula, listReportFormula } from '@/services/ant-design-pro/reportCashFlowStatement';
 import { listByCateAndCodeAndName } from '@/services/ant-design-pro/subject';
 
 import { Link } from '@umijs/max';
 import './index.less'
 
-const { RangePicker } = DatePicker;
-import type { TableRowSelection } from 'antd/es/table/interface';
 import moment from 'moment';
 
 export default () => {
@@ -27,7 +24,7 @@ export default () => {
     const [defaultDate, setDefaultDate] = useState(moment().startOf('month'));
     const [mouseOverRowId, setMouseOverRowId] = useState(0);
     const [subjectOptions, setSubjectOptions] = useState([]);
-    const [selectedSubjectId, setSelectedSubjectId] = useState(0);
+    const [_selectedSubjectId, setSelectedSubjectId] = useState(0);
 
     const onCloseFormula = async () => {
         setOpenEditFormula(false);
@@ -37,7 +34,7 @@ export default () => {
     const onSearchSubject = (name: string) => {
         setSubjectOptions([]);
         listByCateAndCodeAndName({ codeAndName: name }).then(response => {
-            const dataArray = response.data.map(data => ({
+            const dataArray = response.data.map((data: any) => ({
                 value: data.id,
                 label: data.code + "-" + data.fullName
             }));
@@ -45,16 +42,7 @@ export default () => {
         });
     }
     const handleSaveCashFlowStatementFormula = (record: any) => {
-        saveFormula({ ...record, rowNo: editRowNo }).then(response => {
-            message.success("保存成功");
-            formulaRef.current?.reload();
-            actionRef.current?.reload();
-        }).catch((e) => {
-            console.log(e);
-        });
-    }
-    const handleDelCashFlowStatementFormula = (record: any) => {
-        delFormula({ ...record, rowNo: editRowNo }).then(response => {
+        saveFormula({ ...record, rowNo: editRowNo }).then(() => {
             message.success("保存成功");
             formulaRef.current?.reload();
             actionRef.current?.reload();
@@ -63,13 +51,6 @@ export default () => {
         });
     }
 
-    interface DataType {
-        key: React.ReactNode;
-        name: string;
-        age: number;
-        address: string;
-        children?: DataType[];
-    }
     const columns: ProColumns[] = [
         {
             title: '项目',
@@ -77,7 +58,7 @@ export default () => {
             ellipsis: true,
             width: 500,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {record.fontBold ?
                         <span style={{ fontWeight: 'bold' }}>{record.project}</span>
@@ -105,7 +86,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 record.rowNo ? record.rowNo : ""
             ),
         },
@@ -116,7 +97,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.currentMonthTotalAmount ?
@@ -138,7 +119,7 @@ export default () => {
             filters: true,
             ellipsis: true,
             search: false,
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {
                         record.currentYearTotalAmount ?
@@ -171,7 +152,7 @@ export default () => {
             dataIndex: 'readDataRule',
             ellipsis: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 <Space>
                     {record.assetFontBold ?
                         <span style={{ fontWeight: 'bold' }}>{record.asset}</span>
@@ -197,7 +178,7 @@ export default () => {
             dataIndex: 'termEndBalance',
             ellipsis: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 record.termEndBalance ?
                     parseFloat(record.termEndBalance).toFixed(2).toLocaleString() :
                     ""
@@ -209,7 +190,7 @@ export default () => {
             dataIndex: 'yearBeginBalance',
             ellipsis: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => (
+            render: (_text: any, record: any) => (
                 record.yearBeginBalance ?
                     parseFloat(record.yearBeginBalance).toFixed(2).toLocaleString() :
                     ""
@@ -222,7 +203,7 @@ export default () => {
             // dataIndex: 'yearBeginBalance',
             ellipsis: true,
             // tip: '标题过长会自动收缩',
-            render: (text, record, _, action) => {
+            render: (_text: any, record: any) => {
                 const deleteLink =
                     <Link to="#" onClick={() => {
                         Modal.confirm({
@@ -233,7 +214,7 @@ export default () => {
                             cancelText: '取消',
                             onOk: async () => {
                                 await delFormula({ rowNo: editRowNo, subjectId: record.subjectId })
-                                    .then(response => {
+                                    .then(() => {
                                         formulaRef.current?.reload();
                                     })
                                     .catch(error => {
@@ -253,11 +234,8 @@ export default () => {
         }
     ];
 
-    const rowClassName = (record, index) => {
+    const rowClassName = (record: any, index: any) => {
         return index % 2 === 0 ? 'even-row' : 'odd-row';
-    };
-    const handleSearch = async (value) => {
-        message.success(value)
     };
 
     return (
@@ -277,7 +255,7 @@ export default () => {
                     },
                 }}
             >
-                <ProTable<API.ListAccountBookVoItem, API.PageParams>
+                <ProTable<any, any>
                     size={'small'}
                     search={false}
                     columns={columns}
@@ -285,7 +263,7 @@ export default () => {
                     rowClassName={rowClassName}
                     cardBordered
                     bordered
-                    request={async (params = {}, sort, filter) => {
+                    request={async () => {
                         let data = await getReport({ reportDate: moment(defaultDate).format('YYYY-MM-DD 00:00:00') });
                         return { data: data.data.balanceRows };
                     }}
@@ -312,7 +290,7 @@ export default () => {
 
                     }}
                     toolBarRender={() => [
-                        <DatePicker defaultValue={defaultDate} picker="month" onChange={(d) => { setDefaultDate(d); }} />,
+                        <DatePicker key="datePicker" defaultValue={defaultDate} picker="month" onChange={(d) => { setDefaultDate(d); }} />,
                         <Button key="button" icon={<SearchOutlined />} type="primary" onClick={() => { actionRef.current?.reload() }}>
                             查看报表
                         </Button>,
@@ -323,13 +301,13 @@ export default () => {
                     ]}
                     onRow={(record) => {
                         return {
-                            onClick: (event) => { }, // 点击行
-                            onDoubleClick: (event) => { },
-                            onContextMenu: (event) => { },
-                            onMouseEnter: (event) => {
+                            onClick: () => { }, // 点击行
+                            onDoubleClick: () => { },
+                            onContextMenu: () => { },
+                            onMouseEnter: () => {
                                 setMouseOverRowId(record.rowId)
                             }, // 鼠标移入行
-                            onMouseLeave: (event) => {
+                            onMouseLeave: () => {
                                 setMouseOverRowId(0);
                             },// 鼠标移出
                         };
@@ -352,7 +330,6 @@ export default () => {
                     <Space>
                         <ProFormItem
                             label="科目名称"
-                            width="md"
                             name="subjectId" // 确保与 Select 组件的 name 属性匹配
                             rules={[{ required: true, message: '请选择科目' }]} // 添加必填规则
                         >
@@ -363,7 +340,7 @@ export default () => {
                                 filterOption={false}
                                 onFocus={() => { onSearchSubject(""); }}
                                 onSearch={(value: string) => { onSearchSubject(value); }}
-                                onChange={(value) => { setSelectedSubjectId(value ? value.value : ""); }} // 添加此处，更新选中的租户管理员的值
+                                onChange={(value: any) => { setSelectedSubjectId(value ? value.value : ""); }} // 添加此处，更新选中的租户管理员的值
                                 options={subjectOptions}
                             />
                         </ProFormItem>
@@ -410,7 +387,7 @@ export default () => {
                         </Button>
                     </Space>
                 </ProForm>
-                <ProTable<API.ListAccountBookVoItem, API.PageParams>
+                <ProTable<any, any>
                     size={'small'}
                     search={false}
                     columns={formulaColumns}
@@ -418,7 +395,7 @@ export default () => {
                     rowClassName={rowClassName}
                     cardBordered
                     bordered
-                    request={async (params = {}, sort, filter) => {
+                    request={async () => {
                         let data = await listReportFormula({ reportDate: moment(defaultDate).format('YYYY-MM-DD 00:00:00'), rowNo: editRowNo });
                         return { data: data.data };
                     }}
@@ -447,13 +424,13 @@ export default () => {
                     toolBarRender={false}
                     onRow={(record) => {
                         return {
-                            onClick: (event) => { }, // 点击行
-                            onDoubleClick: (event) => { },
-                            onContextMenu: (event) => { },
-                            onMouseEnter: (event) => {
+                            onClick: () => { }, // 点击行
+                            onDoubleClick: () => { },
+                            onContextMenu: () => { },
+                            onMouseEnter: () => {
                                 setMouseOverRowId(record.rowId)
                             }, // 鼠标移入行
-                            onMouseLeave: (event) => {
+                            onMouseLeave: () => {
                                 setMouseOverRowId(0);
                             },// 鼠标移出
                         };
