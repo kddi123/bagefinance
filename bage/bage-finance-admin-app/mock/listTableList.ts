@@ -32,14 +32,11 @@ const genList = (current: number, pageSize: number) => {
 
 let tableListDataSource = genList(1, 100);
 
-function getRule(req: Request, res: Response, u: string) {
-  let realUrl = u;
-  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
-    realUrl = req.url;
-  }
+function getRule(req: Request, res: Response, _u: string) {
   const { current = 1, pageSize = 10 } = req.query;
-  const params = parse(realUrl, true).query as unknown as API.PageParams &
+  const params = parse(req.url, true).query as unknown as API.PageParams &
     API.RuleListItem & {
+      current?: any;
       sorter: any;
       filter: any;
     };
@@ -82,10 +79,7 @@ function getRule(req: Request, res: Response, u: string) {
           if (!filter[key]) {
             return true;
           }
-          if (filter[key].includes(`${item[key]}`)) {
-            return true;
-          }
-          return false;
+          return filter[key].includes(`${item[key]}`);
         });
       });
     }
@@ -105,12 +99,7 @@ function getRule(req: Request, res: Response, u: string) {
   return res.json(result);
 }
 
-function postRule(req: Request, res: Response, u: string, b: Request) {
-  let realUrl = u;
-  if (!realUrl || Object.prototype.toString.call(realUrl) !== '[object String]') {
-    realUrl = req.url;
-  }
-
+function postRule(req: Request, res: Response, _u: string, b: Request) {
   const body = (b && b.body) || req.body;
   const { method, name, desc, key } = body;
 
