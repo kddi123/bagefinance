@@ -1,11 +1,14 @@
 package com.bage.finance.biz.service.impl;
 
+import com.bage.common.constant.CommonConstant;
 import com.bage.common.exception.BizException;
 import com.bage.common.service.TokenService;
 import com.bage.common.util.DateUtil;
 import com.bage.finance.biz.config.ObjectConvertor;
 import com.bage.finance.biz.constant.RedisKeyConstant;
 import com.bage.finance.biz.domain.SysMenu;
+import com.bage.finance.biz.domain.SysRole;
+import com.bage.finance.biz.domain.SysRoleBindMenu;
 import com.bage.finance.biz.dto.AdminDTO;
 import com.bage.finance.biz.dto.form.CreateMenuForm;
 import com.bage.finance.biz.dto.form.DelMenuForm;
@@ -13,8 +16,13 @@ import com.bage.finance.biz.dto.form.UpdateMenuForm;
 import com.bage.finance.biz.dto.vo.GetMenuByIdVo;
 import com.bage.finance.biz.dto.vo.ListTreeMenuVo;
 import com.bage.finance.biz.dto.vo.ListTreeSelectMenuVo;
+import com.bage.finance.biz.dto.vo.MenuDataItemVo;
 import com.bage.finance.biz.mapper.SysMenuMapper;
+import com.bage.finance.biz.mapper.SysRoleBindMenuMapper;
+import com.bage.finance.biz.mapper.SysRoleMapper;
 import com.bage.finance.biz.service.SysMenuService;
+import com.bage.finance.biz.domain.SysRoleField;
+import com.bage.finance.biz.domain.SysRoleBindMenuField;
 import com.bage.mybatis.help.MyBatisWrapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +44,8 @@ import static com.bage.finance.biz.domain.SysMenuField.*;
 @RequiredArgsConstructor
 public class SysMenuServiceImpl implements SysMenuService {
     final SysMenuMapper mapper;
+    final SysRoleMapper sysRoleMapper;
+    final SysRoleBindMenuMapper sysRoleBindMenuMapper;
     final ObjectConvertor objectConvertor;
     final TokenService<AdminDTO> tokenService;
     final RedisTemplate<String, Object> redisTemplate;

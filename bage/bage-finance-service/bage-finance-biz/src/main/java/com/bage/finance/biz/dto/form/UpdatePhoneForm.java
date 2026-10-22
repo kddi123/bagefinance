@@ -18,7 +18,7 @@ public class UpdatePhoneForm {
     /**
      * 短信验证码
      */
-    @Pattern(regexp = "^[0-9]{6}$", message = "短信验证码格式不正确")
+    @Pattern(regexp = "^[0-9]{4,6}$", message = "短信验证码格式不正确")
     @NotBlank
     private String smsCode;
 }

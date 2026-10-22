@@ -59,13 +59,30 @@ xxl:
     ### 执行器通讯TOKEN [选填]：非空时启用；
     accessToken: e1c717f2-9d58-11ee-a3a0-00155d9bf92e
 
+# 阿里云短信（已切换为短信宝，配置保留备用，不要删除）
 ali:
-  accessKeyId: 你的阿里云账号accessKeyId
-  accessKeySecret: 你的阿里云账号accessKeySecret
+  accessKeyId: LTAI5t7usFYeFQ7qqX7VfTQZ
+  accessKeySecret: 7xpiVb46xfn0vCINC7wpKmUOGXEt3V
   sms:
     enable: true
-    endpoint: dysmsapi.aliyuncs.com
-    region: cn-hangzhou
+    # 阿里云号码认证服务（Dypnsapi）endpoint，不是短信服务（dysmsapi）
+    endpoint: dypnsapi.aliyuncs.com
+    region: cn-beijing
+
+# 短信宝短信平台配置
+#smsbao:
+#  # 是否启用短信宝
+#  enable: true
+#  # 短信宝平台账号用户名
+#  username: ncwuywzj
+#  # 短信宝平台账号密码（启动时会做MD5后再提交）
+#  password: 12345678
+#  # 接口地址
+#  api-url: http://api.smsbao.com/sms
+#  # 连接超时（毫秒）
+#  connect-timeout: 5000
+#  # 读取超时（毫秒）
+#  read-timeout: 10000
 
 rocketmq:
   name-server: 127.0.0.1:9876

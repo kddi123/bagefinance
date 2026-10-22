@@ -33,6 +33,6 @@ public class PhoneRegisterForm {
      * 短信验证码
      */
     @NotBlank(message = "请输入短信验证码")
-    @Pattern(regexp = "^[0-9]{6}$", message = "短信验证码格式不正确")
+    @Pattern(regexp = "^[0-9]{4,6}$", message = "短信验证码格式不正确")
     private String smsCode;
 }

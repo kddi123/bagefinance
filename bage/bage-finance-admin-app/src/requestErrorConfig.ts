@@ -1,8 +1,7 @@
 ﻿import type { RequestOptions } from '@@/plugin-request/request';
 import type { RequestConfig } from '@umijs/max';
 import { message, notification } from 'antd';
-import { json } from 'express';
-import { history } from 'umi';
+import { history } from '@umijs/max';
 
 export enum ErrorCode {
   //参数错误
@@ -60,9 +59,11 @@ export const errorConfig: RequestConfig = {
           const { errorMessage, code } = errorInfo;
           let errorMessageString = "";
           console.log("errorMessage" + JSON.stringify(errorMessage))
-          errorMessageString = Object.entries(errorMessage)
-            .map(([key, value]) => `${key}: ${value}`)
-            .join('\n');
+          errorMessageString = errorMessage
+            ? Object.entries(errorMessage)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join('\n')
+            : '';
           console.log("错误信息：" + errorMessageString);
           console.log("code" + code);
           switch (code) {
@@ -79,7 +80,7 @@ export const errorConfig: RequestConfig = {
               // do nothing
               break;
             case ErrorShowType.WARN_MESSAGE:
-              message.warn(errorMessageString);
+              message.warning(errorMessageString);
               break;
             case ErrorShowType.ERROR_MESSAGE:
               message.error(errorMessageString);
@@ -143,9 +144,11 @@ export const errorConfig: RequestConfig = {
       if (data?.success === false) {
         let errorMessageString = "";
         console.log("errorMessage" + JSON.stringify(data?.errorMessage))
-        errorMessageString = Object.entries(data?.errorMessage)
-          .map(([key, value]) => `${key}: ${value}`)
-          .join('\n');
+        errorMessageString = data?.errorMessage
+          ? Object.entries(data?.errorMessage)
+              .map(([key, value]) => `${key}: ${value}`)
+              .join('\n')
+          : '';
         console.log("错误信息：" + errorMessageString);
         //message.error(errorMessageString);
       }

@@ -1,11 +1,6 @@
 package com.bage.finance.biz.dto;
 
 import lombok.Data;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-
-import java.io.Serializable;
-import java.util.List;
 
 @Data
 public class SmsTemplateDTO {
@@ -18,4 +13,10 @@ public class SmsTemplateDTO {
      * 短信模板编号
      */
     private String templateCode;
+
+    /**
+     * 验证码有效时长（分钟），阿里云号码认证服务模板参数 min 使用；
+     * 未配置时后端默认 15 分钟
+     */
+    private String min;
 }

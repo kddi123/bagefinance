@@ -7,7 +7,36 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="bage-finance-service" />
+        <module name="xxl-job-core" />
+        <module name="xxl-job-admin" />
+        <module name="xxl-job-executor-sample-springboot" />
+        <module name="xxl-job-executor-sample-frameless" />
+      </profile>
+      <profile name="Annotation profile for bage-wx" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$MAVEN_REPOSITORY$/org/projectlombok/lombok/1.18.32/lombok-1.18.32.jar" />
+          <entry name="$MAVEN_REPOSITORY$/org/mapstruct/mapstruct-processor/1.5.5.Final/mapstruct-processor-1.5.5.Final.jar" />
+        </processorPath>
+        <module name="bage-finance-admin-api" />
+        <module name="bage-wx" />
+        <module name="bage-finance-biz" />
+        <module name="bage-common" />
+        <module name="bage-mybatis" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel target="17" />
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="bage-common" options="-parameters" />
+      <module name="bage-finance-admin-api" options="-parameters" />
+      <module name="bage-finance-biz" options="-parameters" />
+      <module name="bage-mybatis" options="-parameters" />
+      <module name="bage-parent" options="-parameters" />
+      <module name="bage-wx" options="-parameters" />
+    </option>
   </component>
 </project>

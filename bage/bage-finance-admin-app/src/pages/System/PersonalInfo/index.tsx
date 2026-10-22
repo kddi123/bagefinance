@@ -317,7 +317,7 @@ const PersonalInfo: React.FC = () => {
                                         message: '请输入短信验证码！',
                                     },
                                     {
-                                        pattern: /^[0-9]{6}$/,
+                                        pattern: /^[0-9]{4,6}$/,
                                         message: '短信验证码格式不正确',
                                     }
                                 ]}

@@ -99,6 +99,14 @@ public class MemberComServiceImpl implements MemberComService {
      */
     @Override
     public boolean checkSmsCode(String phone, String smsCode, String smsCodeType) {
+        // 阿里云号码认证服务（Dypnsapi）：验证码由阿里云服务端生成（##code## 机制），
+        // 后端 Redis 中的码与手机收到的码不一致，必须委托给阿里云校验接口比对。
+        if (smsService.isAliyunDypns()) {
+            smsService.checkSms(phone, smsCode);
+            redisTemplate.delete(RedisKeyConstant.SMS_CODE + smsCodeType + tokenService.getThreadLocalUserId());
+            return true;
+        }
+        // 短信宝等后端生成码的渠道：走本地 Redis 比对
         SmsCodeResult cacheSmsCode = (SmsCodeResult) redisTemplate.opsForValue().get(RedisKeyConstant.SMS_CODE + smsCodeType + tokenService.getThreadLocalUserId());
         redisTemplate.delete(RedisKeyConstant.SMS_CODE + smsCodeType + tokenService.getThreadLocalUserId());
         if (cacheSmsCode == null || !smsCode.equals(cacheSmsCode.getCode())) {

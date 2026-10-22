@@ -5,10 +5,17 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/bage-finance-service/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/xxl-job2.4.0/xxl-job/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-common/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-finance-admin-api/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-finance-biz/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-mybatis/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-parent/pom.xml" />
+        <option value="$PROJECT_DIR$/bage-finance-service/bage-wx/pom.xml" />
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_25" default="true" project-jdk-name="25" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" project-jdk-name="17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

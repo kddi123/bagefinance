@@ -53,6 +53,8 @@ public class SmsServiceImpl implements SmsService {
             throw new BizException("短信模板未配置或未加载到缓存中");
         }
         Map<String, String> templateParam = new HashMap<>();
+        // min：号码认证服务验证码有效分钟数（模板需要时传入，代码默认 15）
+        templateParam.put("min", smsTemplate.getMin() == null ? "15" : smsTemplate.getMin());
         templateParam.put("code", smsCode);
         smsCommonService.sendSms(smsTemplate.getSignName(), smsTemplate.getTemplateCode(),
                 phone, templateParam);
@@ -71,6 +73,8 @@ public class SmsServiceImpl implements SmsService {
             throw new BizException("短信模板未配置或未加载到缓存中");
         }
         Map<String, String> templateParam = new HashMap<>();
+        // min：号码认证服务验证码有效分钟数（模板需要时传入，代码默认 15）
+        templateParam.put("min", smsTemplate.getMin() == null ? "15" : smsTemplate.getMin());
         templateParam.put("code", smsCode);
         smsCommonService.sendSms(smsTemplate.getSignName(), smsTemplate.getTemplateCode(),
                 phone, templateParam);
@@ -89,8 +93,32 @@ public class SmsServiceImpl implements SmsService {
             throw new BizException("短信模板未配置或未加载到缓存中");
         }
         Map<String, String> templateParam = new HashMap<>();
+        // min：号码认证服务验证码有效分钟数（模板需要时传入，代码默认 15）
+        templateParam.put("min", smsTemplate.getMin() == null ? "15" : smsTemplate.getMin());
         templateParam.put("code", smsCode);
         smsCommonService.sendSms(smsTemplate.getSignName(), smsTemplate.getTemplateCode(),
                 phone, templateParam);
+    }
+
+    /**
+     * 校验短信验证码（委托给底层短信渠道）
+     *
+     * @param phone   手机号
+     * @param smsCode 用户输入的短信验证码
+     * @return true 校验通过
+     */
+    @Override
+    public boolean checkSms(String phone, String smsCode) {
+        return smsCommonService.checkSms(phone, smsCode);
+    }
+
+    /**
+     * 当前短信渠道是否为阿里云号码认证服务（Dypnsapi）
+     *
+     * @return true 表示当前为阿里云号码认证服务渠道
+     */
+    @Override
+    public boolean isAliyunDypns() {
+        return smsCommonService instanceof com.bage.common.service.impl.ALiSmsServiceImpl;
     }
 }
