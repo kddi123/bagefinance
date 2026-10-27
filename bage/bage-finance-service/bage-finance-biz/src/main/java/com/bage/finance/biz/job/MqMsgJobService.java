@@ -18,15 +18,17 @@ public class MqMsgJobService {
      * 处理定时MQ消息
      */
     @XxlJob("handleMqMessage")
-    public ReturnT<String> handleMqMessage(String param) throws Exception {
+    public ReturnT<String> handleMqMessage(String param) {
         XxlJobHelper.log("handleMqMessage -> begin");
         try {
             XxlJobHelper.log("开始执行任务");
             mqMsgService.handleMqMessage();
             XxlJobHelper.log("任务执行结束");
         } catch (Exception e) {
-            XxlJobHelper.log("任务执行失败", e);
-            return ReturnT.FAIL;
+            // 不要写 ReturnT.FAIL：xxl-job BEAN 模式会丢弃返回值，必须 handleFail 才能让 admin 记为失败
+            XxlJobHelper.log("任务执行失败: {}", e);
+            XxlJobHelper.handleFail("handleMqMessage 执行失败: " + e.getMessage());
+            log.error("handleMqMessage 执行失败", e);
         }
         return ReturnT.SUCCESS;
     }

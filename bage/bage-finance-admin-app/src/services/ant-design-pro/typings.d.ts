@@ -186,6 +186,12 @@ declare namespace API {
     createTime?: Date;
     enableVoucherVerify?: boolean;
     disable?: boolean;
+    name?: string;
+    extension?: string;
+    picUrl?: string;
+    folderId?: number;
+    sort?: number;
+    childCount?: number;
   }
   type GetAccountBookVo = {
     id?: number;

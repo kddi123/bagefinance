@@ -26,7 +26,7 @@ const HeaderSearch: React.FC<HeaderSearchProps> = (props) => {
     defaultValue,
     onVisibleChange,
     placeholder,
-    visible,
+    visible: _visible,
     defaultVisible,
     ...restProps
   } = props;

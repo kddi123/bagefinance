@@ -26,7 +26,7 @@ export const AvatarDropdown: React.FC<GlobalHeaderRightProps> = ({ menu, childre
    */
   const loginOut = async () => {
     const clientId = localStorage.getItem('clientId');
-    await outLogin({clientId}).then(response => {
+    await outLogin({ clientId: clientId ?? undefined }).then(() => {
       localStorage.removeItem('token');
       localStorage.removeItem('clientId');
       const { search, pathname } = window.location;

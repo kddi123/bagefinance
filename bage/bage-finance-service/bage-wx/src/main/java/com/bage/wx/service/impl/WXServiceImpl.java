@@ -31,7 +31,8 @@ public class WXServiceImpl implements WXService {
      */
     @Override
     public AccessTokenResult getMpAccessTokenByCache(String appid) {
-        return (AccessTokenResult) redisTemplate.opsForValue().get(MP_TOKEN_REDIS_CACHE_KEY + appid);
+        return (AccessTokenResult) redisTemplate.opsForValue()
+                .get(MP_TOKEN_REDIS_CACHE_KEY + appid);
     }
 
     /**
@@ -43,7 +44,8 @@ public class WXServiceImpl implements WXService {
     @Override
     public void setMpAccessTokenCache(String appid, String secret) {
         AccessTokenResult accessTokenResult = getMpAccessToken(appid, secret);
-        redisTemplate.opsForValue().set(MP_TOKEN_REDIS_CACHE_KEY + appid, accessTokenResult);
+        redisTemplate.opsForValue()
+                .set(MP_TOKEN_REDIS_CACHE_KEY + appid, accessTokenResult);
     }
 
     /**

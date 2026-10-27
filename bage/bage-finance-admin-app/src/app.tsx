@@ -1,4 +1,4 @@
-import { Footer, Question, SelectLang, AvatarDropdown, AvatarName } from '@/components';
+import { Footer, Question, AvatarDropdown, AvatarName } from '@/components';
 import { FundOutlined, LinkOutlined, AccountBookOutlined, SmileOutlined, FileTextOutlined, SettingOutlined, PieChartOutlined, FileExcelOutlined, CreditCardOutlined, TransactionOutlined, UploadOutlined, FileProtectOutlined, HomeOutlined, BankOutlined, ReadOutlined, ToolOutlined, HistoryOutlined } from '@ant-design/icons';
 import type { Settings as LayoutSettings } from '@ant-design/pro-components';
 import { SettingDrawer } from '@ant-design/pro-components';
@@ -9,8 +9,6 @@ import defaultSettings from '../config/defaultSettings';
 import { errorConfig } from './requestErrorConfig';
 import { currentUser as queryCurrentUser, listRoleBindMenu } from '@/services/ant-design-pro/api';
 import React from 'react';
-import { json } from 'express';
-import { message } from 'antd';
 const isDev = process.env.NODE_ENV === 'development';
 const loginPath = '/user/login';
 const registerPath = '/user/register';
@@ -36,7 +34,7 @@ const IconMap = {
 //映射菜单对应的图标
 const loopMenuItem = (menus: MenuDataItem[]): MenuDataItem[] => menus.map(({ icon, routes, ...item }) => ({
   ...item,
-  icon: icon && IconMap[icon as string],
+  icon: icon && (IconMap as Record<string, React.ReactNode>)[icon as string],
   routes: routes && loopMenuItem(routes),
 }));
 
@@ -133,7 +131,7 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       params: {
         userId: initialState?.currentUser?.userid,
       },
-      request: async (params, defaultMenuData) => {
+      request: async (_params, _defaultMenuData) => {
         // initialState.currentUser 中包含了所有用户信息
         const menuData = await listRoleBindMenu();
         return loopMenuItem(menuData.data);

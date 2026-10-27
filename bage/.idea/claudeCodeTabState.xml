@@ -10,7 +10,7 @@
               <option name="provider" value="claude" />
               <option name="sessionId" value="bd9d85c7-0f40-4518-a501-18cf6668929c" />
               <option name="cwd" value="E:\Sourcecodedirectory\mianshi\bage" />
-              <option name="model" value="claude-sonnet-5" />
+              <option name="model" value="claude-sonnet-5[1m]" />
               <option name="permissionMode" value="default" />
             </TabSessionState>
           </value>

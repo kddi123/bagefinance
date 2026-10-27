@@ -52,7 +52,7 @@ export async function del(
 /** 币别列表 GET /file/listByIds */
 export async function listByIds(
   params: {
-    ids?: []
+    ids?: number[]
   },
   options?: { [key: string]: any },
 ) {

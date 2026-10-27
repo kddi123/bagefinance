@@ -18,15 +18,17 @@ public class SysJobService {
      * 将所有角色绑定的菜单设置到缓存中
      */
     @XxlJob("setSysRoleMenuCacheJobHandler")
-    public ReturnT<String> setSysRoleMenuCacheJobHandler(String param) throws Exception {
+    public ReturnT<String> setSysRoleMenuCacheJobHandler(String param) {
         XxlJobHelper.log("setSysRoleMenuCacheJobHandler -> begin");
         try {
             XxlJobHelper.log("开始执行任务");
             sysRoleService.setSysRoleMenuCache();
             XxlJobHelper.log("任务执行结束");
         } catch (Exception e) {
-            XxlJobHelper.log("任务执行失败", e);
-            return ReturnT.FAIL;
+            // 不要写 ReturnT.FAIL：xxl-job BEAN 模式会丢弃返回值，必须 handleFail 才能让 admin 记为失败
+            XxlJobHelper.log("任务执行失败: {}", e);
+            XxlJobHelper.handleFail("setSysRoleMenuCacheJobHandler 执行失败: " + e.getMessage());
+            log.error("setSysRoleMenuCacheJobHandler 执行失败", e);
         }
         return ReturnT.SUCCESS;
     }
@@ -35,15 +37,17 @@ public class SysJobService {
      * 将所有角色绑定的资源设置到缓存中
      */
     @XxlJob("setSysRoleResourceCacheJobHandler")
-    public ReturnT<String> setSysRoleResourceCacheJobHandler(String param) throws Exception {
+    public ReturnT<String> setSysRoleResourceCacheJobHandler(String param) {
         XxlJobHelper.log("setSysRoleResourceCacheJobHandler -> begin");
         try {
             XxlJobHelper.log("开始执行任务");
             sysRoleService.setSysRoleResourceCache();
             XxlJobHelper.log("任务执行结束");
         } catch (Exception e) {
-            XxlJobHelper.log("任务执行失败", e);
-            return ReturnT.FAIL;
+            // 不要写 ReturnT.FAIL：xxl-job BEAN 模式会丢弃返回值，必须 handleFail 才能让 admin 记为失败
+            XxlJobHelper.log("任务执行失败: {}", e);
+            XxlJobHelper.handleFail("setSysRoleResourceCacheJobHandler 执行失败: " + e.getMessage());
+            log.error("setSysRoleResourceCacheJobHandler 执行失败", e);
         }
         return ReturnT.SUCCESS;
     }

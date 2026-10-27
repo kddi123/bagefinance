@@ -1,29 +1,38 @@
 import {
-    ExclamationCircleOutlined, PlusOutlined, FolderOutlined, FolderOpenFilled, InboxOutlined, EyeOutlined, OrderedListOutlined, PictureOutlined,
+    PlusOutlined, FolderOutlined, FolderOpenFilled, InboxOutlined, EyeOutlined, OrderedListOutlined, PictureOutlined,
     CheckOutlined,
     DeleteOutlined,
     VideoCameraOutlined,
     EditOutlined
 } from '@ant-design/icons';
-import { ActionType, PageContainer, ProColumns } from '@ant-design/pro-components';
-import { ProTable, TableDropdown, ProForm, ProFormText } from '@ant-design/pro-components';
-import type { UploadProps } from 'antd';
-import { Button, Dropdown, Space, Tag, Switch, Modal, message, Tree, Card, Row, Col, Form, DatePicker, Input, Upload, List, Affix, Badge, Drawer, Pagination } from 'antd';
-import { useRef, useState, useEffect, useImperativeHandle, forwardRef } from 'react';
-import request from 'umi-request';
+import { ActionType, ProColumns } from '@ant-design/pro-components';
+import { ProTable, ProForm, ProFormText } from '@ant-design/pro-components';
+import type { UploadProps, UploadFile } from 'antd';
+import { Button, Space, Modal, message, Tree, Card, Row, Col, Form, DatePicker, Input, Upload, List, Badge, Drawer, Pagination } from 'antd';
+import { useRef, useState, useEffect } from 'react';
 import { list, create, del as delFolder, update as updateFolder, get as getFolder } from '@/services/ant-design-pro/folder';
 import { list as listFile, getPicUrl, del, listByIds, composeFile, listFileIds } from '@/services/ant-design-pro/file';
 import './index.less'
-import { Link } from 'umi';
+import { Link } from '@umijs/max';
 import {
-    FolderOpenOutlined,
     FileTextOutlined, FilePdfOutlined, FileImageOutlined, FileExcelOutlined, FileWordOutlined, FilePptOutlined
 } from '@ant-design/icons';
 import moment from 'moment';
 import axios from 'axios';
 import { v4 as uuidv4 } from 'uuid';
-import { response } from 'express';
-const iconMap = {
+type AntdDataNode = {
+    title?: React.ReactNode;
+    key: React.Key;
+    isLeaf?: boolean;
+    children?: AntdDataNode[];
+};
+type UploadRequestOption = {
+    file: any;
+    onProgress?: (event: { percent: number }) => void;
+    onSuccess?: (response: any, xhr?: any) => void;
+    onError?: (error: Error) => void;
+};
+const iconMap: Record<string, React.ReactNode> = {
     '.txt': <FileTextOutlined />,
     '.pdf': <FilePdfOutlined />,
     '.png': <FileImageOutlined />,
@@ -37,7 +46,7 @@ const iconMap = {
     '.mp4': <VideoCameraOutlined />
 };
 const getFileIcon = (extension: string) => {
-    return iconMap[extension] || <div>extension</div>; // 如果没有匹配项，显示未知文件类型  
+    return iconMap[extension] ?? <div>extension</div>; // 如果没有匹配项，显示未知文件类型
 }
 const { RangePicker } = DatePicker;
 const { Dragger } = Upload;
@@ -47,6 +56,10 @@ interface DataNode {
     key: string;
     isLeaf?: boolean;
     children?: DataNode[];
+    sort?: string;
+    sortOrder?: number;
+    pid?: string;
+    expanded?: boolean;
 }
 
 const initTreeData: DataNode[] = [
@@ -57,9 +70,9 @@ const initTreeData: DataNode[] = [
 
 
 
-const FileIndex: React.FC<any> = (props1, onParamsChange) => {
+const FileIndex: React.FC<any> = (props1, _onParamsChange) => {
     const { p } = props1;
-    const [fileList, setFileList] = useState([]);
+    const [fileList, setFileList] = useState<UploadFile[]>([]);
     const [treeData, setTreeData] = useState(initTreeData);
     const actionRef = useRef<ActionType>();
     const [dataSource, setDataSource] = useState<API.ListAccountBookVoItem[]>();
@@ -69,8 +82,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isModalOpenPrePic, setIsModalOpenPrePir] = useState(false);
-    const [folderId, setFolderId] = useState(0);
-    const [parentFolderId, setParentFolderId] = useState(0);
+    const [folderId, setFolderId] = useState<number | null>(0);
+    const [_parentFolderId, setParentFolderId] = useState(0);
     const [picUrl, setPicUrl] = useState('');
     const [picTitle, setPicTitle] = useState('');
     const [extension, setExtension] = useState('');
@@ -79,8 +92,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
     const [isOpenUpdateFolder, setIsOpenUpdateFolder] = useState(false);
     const [isShowList, setIsShowList] = useState(false);
     const [total, setTotal] = useState<number>(0);
-    const [current, setCurrent] = useState<Number>(1);
-    const [searchPar, setSearchPar] = useState({ pageNum: 1, pageSize: 10 });
+    const [current, _setCurrent] = useState<number>(1);
+    const [searchPar, setSearchPar] = useState<{ pageNum: number; pageSize?: number }>({ pageNum: 1, pageSize: 10 });
     const [selectFileIds, setSelectFileIds] = useState<number[]>([]);
     // 通过 useImperativeHandle 向父组件暴露方法
     // useImperativeHandle(ref, () => ({
@@ -92,33 +105,33 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
 
     // 状态来控制展开的节点
     const [expandedKeys, setExpandedKeys] = useState<string[]>(['0']);
-    const videoRef = useRef(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
 
     let token = localStorage.getItem('token');
     let clientId = localStorage.getItem('clientId');
 
     const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB
     const MAX_CONCURRENT_UPLOADS = 10; //最多同时上传10个文件
-    const customRequest = async ({ file, onProgress, onSuccess, onError }) => {
+    const customRequest = async ({ file, onProgress, onSuccess, onError }: UploadRequestOption) => {
         const fileName = file.name;
         const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
         const uuid = uuidv4();
 
         let uploadIndex = 0;
-        const uploadQueue = [];
+        const uploadQueue: number[] = [];
         const activeUploads = new Set();
 
-        const uploadChunk = async (chunkIndex) => {
+        const uploadChunk = async (chunkIndex: number) => {
             const start = chunkIndex * CHUNK_SIZE;
             const end = Math.min(start + CHUNK_SIZE, file.size);
             const blob = file.slice(start, end);
 
             const formData = new FormData();
             formData.append('file', blob);
-            formData.append('chunk', chunkIndex);
-            formData.append('totalChunks', totalChunks);
+            formData.append('chunk', String(chunkIndex));
+            formData.append('totalChunks', String(totalChunks));
             formData.append('fileName', fileName);
-            formData.append('folderId', folderId);
+            formData.append('folderId', String(folderId));
             formData.append('uid', uuid);
 
             try {
@@ -137,14 +150,12 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                         onProgress({ percent: ((uploadIndex) / totalChunks) * 100 });
                     }
                 }
-            } catch (error) {
-                throw error;
             } finally {
                 activeUploads.delete(chunkIndex);
                 if (uploadQueue.length > 0) {
-                    const nextChunkIndex = uploadQueue.shift();
+                    const nextChunkIndex = uploadQueue.shift()!;
                     activeUploads.add(nextChunkIndex);
-                    uploadChunk(nextChunkIndex).catch(onError);
+                    uploadChunk(nextChunkIndex).catch(() => onError);
                 }
             }
         };
@@ -153,20 +164,20 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
             for (let chunk = 0; chunk < totalChunks; chunk++) {
                 if (activeUploads.size < MAX_CONCURRENT_UPLOADS) {
                     activeUploads.add(chunk);
-                    uploadChunk(chunk).catch(onError);
+                    uploadChunk(chunk).catch(() => onError);
                 } else {
                     uploadQueue.push(chunk);
                 }
             }
 
             while (activeUploads.size > 0) {
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise((resolve) => { setTimeout(resolve, 100); });
             }
 
             if (totalChunks > 1) {
                 await composeFile({
                     totalChunks: totalChunks,
-                    folderId: folderId,
+                    folderId: folderId ?? undefined,
                     fileName: fileName,
                     uid: uuid,
                 });
@@ -176,11 +187,19 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                 onProgress({ percent: 100 });
             }
 
-            onSuccess('File uploaded successfully');
+            onSuccess?.('File uploaded successfully');
         } catch (error) {
-            onError(error);
+            onError?.(error as Error);
             message.error(`${file.name} 上传失败！`);
         }
+    };
+    const getDataSource = async (params: any) => {
+        await listFile({ ...params }).then((response: any) => {
+            setDataSource(response.data.list);
+            setTotal(response.data.total);
+        }).catch((e) => {
+            console.log(e);
+        });
     };
     const props: UploadProps = {
         name: 'file',
@@ -236,8 +255,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                 resolve();
                 return;
             }
-            list({ pid: key }).then(response => {
-                const newData = response.data.map((item, index) => ({
+            list({ pid: Number(key) }).then((response: any) => {
+                const newData = response.data.map((item: any) => ({
                     title: item.name,
                     pid: `${item.pid}`,
                     key: `${item.id}`, // 这里需要根据实际情况组合 key
@@ -296,7 +315,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                 node.isLeaf = false;
                 shouldExpandParent = true;
                 node.children.push(newChild);
-                node.children.sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0)); // 根据sort排序子节点
+                node.children.sort((a, b) => Number(a.sort ?? 0) - Number(b.sort ?? 0)); // 根据sort排序子节点
                 node.expanded = true; // 展开父节点
             } else if (node.children) {
                 // 递归调用该函数为每个子节点
@@ -350,7 +369,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
             title: <strong>操作</strong>,
             valueType: 'option',
             key: 'option',
-            render: (text, record, _, action) => {
+            render: (text, record, _, _action) => {
                 return [
                     <Link to={"#"} key="editable"
                         onClick={() => {
@@ -360,7 +379,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                 okText: '确认',
                                 cancelText: '取消',
                                 onOk() {
-                                    del({ id: record.id }).then((response) => {
+                                    del({ id: record.id }).then((response: any) => {
                                         if (response.data) {
                                             message.success("删除成功");
                                             // listTreeMenuData();
@@ -381,8 +400,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                         删除
                     </Link>
                     ,
-                    <a href='#' onClick={() => {
-                        getPicUrl({ id: record.id }).then((response) => {
+                    <a href='#' key='view' onClick={() => {
+                        getPicUrl({ id: record.id }).then((response: any) => {
                             setPicTitle(record.name);
                             setIsModalOpenPrePir(true);
                             setPicUrl(response.data);
@@ -412,13 +431,13 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
         setIsModalOpen(false);
     };
 
-    const showModalPrePic = () => {
-        setIsModalOpenPrePir(true);
-    };
+    // const showModalPrePic = () => {
+    //     setIsModalOpenPrePir(true);
+    // };
 
-    const handlePrePicOk = () => {
-        setIsModalOpenPrePir(false);
-    };
+    // const handlePrePicOk = () => {
+    //     setIsModalOpenPrePir(false);
+    // };
 
     const handlePrePicCancel = () => {
         if (videoRef.current) {
@@ -454,26 +473,28 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
 
     const rowSelection = {
         selectedRowKeys: selectFileIds, // 设置默认选中的行
-        onChange: (selectedRowKeys, selectedRows) => {
-            setSelectFileIds(selectedRowKeys);
+        onChange: (selectedRowKeys: React.Key[], selectedRows: any[]) => {
+            setSelectFileIds(selectedRowKeys as number[]);
             console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
         },
-        getCheckboxProps: record => ({
+        getCheckboxProps: (record: any) => ({
             disabled: record.name === 'Disabled User', // Column configuration not to be checked
             name: record.name,
         }),
     };
     const imageExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
 
-    const isImage = (fileName) => {
-        const extension = fileName.split('.').pop().toLowerCase();
+    const isImage = (fileName: string | undefined) => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop()!.toLowerCase();
         return imageExtensions.includes(extension);
     };
 
     const videoExtensions = ['mp4'];
 
-    const isVideo = (fileName) => {
-        const extension = fileName.split('.').pop().toLowerCase();
+    const isVideo = (fileName: string | undefined) => {
+        if (!fileName) return false;
+        const extension = fileName.split('.').pop()!.toLowerCase();
         return videoExtensions.includes(extension);
     };
     const onOpenSelectFile = async () => {
@@ -482,7 +503,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
             setSelectDataSource([]);
             return;
         }
-        await listByIds({ ids: selectFileIds }).then((response) => {
+        await listByIds({ ids: selectFileIds }).then((response: any) => {
             setSelectDataSource(response.data);
         }).catch((e) => {
             console.log(e);
@@ -490,14 +511,6 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
     }
     const onCloseSelectFile = () => {
         setIsOpenSelectFile(false);
-    }
-    const getDataSource = async (params: any) => {
-        let response = await listFile({ ...params }).then((response) => {
-            setDataSource(response.data.list);
-            setTotal(response.data.total);
-        }).catch((e) => {
-            console.log(e);
-        });
     }
     const handleListPageChange = (page: number, pageSize?: number) => {
         setSearchPar({ ...searchPar, pageNum: page, pageSize });
@@ -518,7 +531,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
             formCreateFolder.setFieldsValue({ parentName: "根目录" });
             return;
         }
-        await getFolder({ id: folderId }).then((response) => {
+        await getFolder({ id: folderId! }).then((response: any) => {
             formUpdateFolder.setFieldsValue(response.data);
             formCreateFolder.setFieldsValue({ parentName: response.data.name });
 
@@ -530,9 +543,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
     useEffect(() => {
         if (treeData.length === 0) {
             setExpandedKeys(['0']);
-            const newData = [{
+            const newData: DataNode[] = [{
                 title: "所有文件",
-                expand: true,
                 key: '0'
             }];
             setTreeData(newData);
@@ -541,7 +553,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                     setSelectFileIds(p.fileIds);
                 }
                 else if (p.fileRefType >= 0) {
-                    listFileIds({ ...p }).then((response) => {
+                    listFileIds({ ...p }).then((response: any) => {
                         if (response.data) {
                             setSelectFileIds(response.data);
                         }
@@ -628,10 +640,10 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                                 okText: '确认',
                                                 cancelText: '取消',
                                                 onOk() {
-                                                    delFolder({ id: folderId })
-                                                        .then((response) => {
+                                                    delFolder({ id: folderId ?? undefined })
+                                                        .then(() => {
                                                             message.success("删除成功");
-                                                            const newTreeData = deleteTreeNode(treeData, folderId.toString());
+                                                            const newTreeData = deleteTreeNode(treeData, String(folderId));
                                                             setTreeData(newTreeData);
                                                         })
                                                         .catch((e) => {
@@ -646,10 +658,10 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                             </Space>
                         }
                     >
-                        <Tree loadData={onLoadData} treeData={treeData}
+                        <Tree loadData={onLoadData} treeData={treeData as unknown as AntdDataNode[]}
                             showLine
                             expandedKeys={expandedKeys} // 使用受控属性 expandedKeys
-                            onExpand={(keys) => setExpandedKeys(keys)} // 更新 expandedKeys 状态
+                            onExpand={(keys) => setExpandedKeys(keys as string[])} // 更新 expandedKeys 状态
                             // onExpand={async (expandedKeys, { expanded, node }) => {
                             //     if (!expanded) {
                             //         const keysToRemove = node.children.map(child => child.key);
@@ -670,7 +682,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                     setFolderId(null); // 清空 folderId
                                 } else {
                                     setFolderId(Number(selectedKeys[0]));
-                                    setParentFolderId(e.node.pid);
+                                    setParentFolderId((e.node as any).pid);
                                     form.submit();
                                 }
                             }}
@@ -760,7 +772,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                                         border: '3px solid rgb(243,244,244)',
                                                         padding: 5
                                                     }} >
-                                                    {getFileIcon(item.extension)}
+                                                    {getFileIcon(item.extension ?? '')}
                                                 </div>
                                             }
                                             <div style={{
@@ -772,8 +784,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                                 cursor: 'pointer'
                                             }}
                                                 onClick={() => {
-                                                    getPicUrl({ id: item.id }).then((response) => {
-                                                        setPicTitle(item.name);
+                                                    getPicUrl({ id: item.id }).then((response: any) => {
+                                                        setPicTitle(item.name ?? '');
                                                         setIsModalOpenPrePir(true);
                                                         setPicUrl(response.data);
                                                     }).catch((e) => {
@@ -784,11 +796,11 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                             <Space>
                                                 <Link to='#'
                                                     onClick={() => {
-                                                        getPicUrl({ id: item.id }).then((response) => {
-                                                            setPicTitle(item.name);
+                                                        getPicUrl({ id: item.id }).then(() => {
+                                                            setPicTitle(item.name ?? '');
                                                             setIsModalOpenPrePir(true);
-                                                            setPicUrl(item.picUrl);
-                                                            setExtension(item.extension);
+                                                            setPicUrl(item.picUrl ?? '');
+                                                            setExtension(item.extension ?? '');
                                                         }).catch((e) => {
                                                             console.log(e);
                                                         })
@@ -802,7 +814,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                                             okText: '确认',
                                                             cancelText: '取消',
                                                             onOk() {
-                                                                del({ id: item.id }).then((response) => {
+                                                                del({ id: item.id }).then((response: any) => {
                                                                     if (response.data) {
                                                                         message.success("删除成功");
                                                                         // listTreeMenuData();
@@ -934,7 +946,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                     sort: values.sort,
                                     isLeaf: true, // Assuming it's a leaf node
                                 };
-                                const newTreeData = addTreeNodeAndExpand(treeData, folderId.toString(), newChildNode);
+                                const newTreeData = addTreeNodeAndExpand(treeData, String(folderId), newChildNode);
                                 setTreeData(newTreeData);
                                 // if (folderId) {
                                 //     onLoadData({ key: parentFolderId });
@@ -1003,7 +1015,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                             if (response.data) {
                                 message.success("修改成功");
                                 setIsOpenUpdateFolder(false);
-                                const newTreeData = updateTreeNode(treeData, folderId.toString(), values.name, values.sort);
+                                const newTreeData = updateTreeNode(treeData, String(folderId), values.name, values.sort);
                                 setTreeData(newTreeData);
                             }
                             else {
@@ -1074,8 +1086,8 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                 {isImage(item.extension) ?
                                     (<div style={{ border: '3px solid rgb(243,244,244)', padding: 5 }}><img src={item.picUrl} style={{ width: 150, height: 150, cursor: 'pointer', objectFit: 'contain' }} alt={item.name}
                                         onClick={() => {
-                                            getPicUrl({ id: item.id }).then((response) => {
-                                                setPicTitle(item.name);
+                                            getPicUrl({ id: item.id }).then((response: any) => {
+                                                setPicTitle(item.name ?? '');
                                                 setIsModalOpenPrePir(true);
                                                 setPicUrl(response.data);
                                             }).catch((e) => {
@@ -1094,7 +1106,7 @@ const FileIndex: React.FC<any> = (props1, onParamsChange) => {
                                             border: '3px solid rgb(243,244,244)',
                                             padding: 5
                                         }} >
-                                        {getFileIcon(item.extension)}
+                                        {getFileIcon(item.extension ?? '')}
                                     </div>
                                 }
                                 <div style={{

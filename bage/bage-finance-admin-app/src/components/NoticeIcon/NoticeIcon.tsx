@@ -106,6 +106,7 @@ const NoticeIcon: React.FC<NoticeIconProps> & {
   return (
     <HeaderDropdown
       placement="bottomRight"
+      // @ts-expect-error antd v5 移除了 overlay/visible 等属性，此处保留旧写法，等待迁移到 menu={{ items }}
       overlay={notificationBox}
       overlayClassName={styles.popover}
       trigger={['click']}

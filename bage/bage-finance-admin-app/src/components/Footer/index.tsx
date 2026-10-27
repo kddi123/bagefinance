@@ -4,14 +4,13 @@ import { useIntl, history, useModel } from '@umijs/max';
 import React, { useEffect, useState, useRef } from 'react';
 import { message } from 'antd';
 import { getClientToken } from '@/services/ant-design-pro/login';
-import { response } from 'express';
 import { flushSync } from 'react-dom';
 import { AlertOutlined } from '@ant-design/icons';
 
 const Footer: React.FC = () => {
   const { initialState, setInitialState } = useModel('@@initialState');
 
-  const [socket, setSocket] = useState<WebSocket | null>(null);
+  const [, setSocket] = useState<WebSocket | null>(null);
   const [iconColor, setIconColor] = useState('inherit'); // State for icon color
 
   const intl = useIntl();
@@ -59,21 +58,6 @@ const Footer: React.FC = () => {
 
   let autoChangeInterval: string | number | NodeJS.Timeout | undefined;  //自动切换定时器
 
-  const autoGetClientToken = () => {  //自动轮播函数
-    clearTimeout(autoChangeInterval);
-    autoChangeInterval = setTimeout(() => {
-      const clientId = localStorage.getItem("clientId");
-      getClientToken({ clientId: clientId }).then(response => {
-        if (response.data && response.data) {
-          loginSuccess(response.data);
-        }
-        else {
-          autoGetClientToken();
-        }
-      });
-    }, 5000)
-  };
-
   const loginSuccess = async (data: any) => {
     clearTimeout(autoChangeInterval);
 
@@ -85,6 +69,21 @@ const Footer: React.FC = () => {
     return;
 
   }
+
+  const autoGetClientToken = () => {  //自动轮播函数
+    clearTimeout(autoChangeInterval);
+    autoChangeInterval = setTimeout(() => {
+      const clientId = localStorage.getItem("clientId");
+      getClientToken({ clientId: clientId ?? '' }).then(response => {
+        if (response.data && response.data) {
+          loginSuccess(response.data);
+        }
+        else {
+          autoGetClientToken();
+        }
+      });
+    }, 5000)
+  };
 
   const connectServer = () => {
     if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) {
@@ -130,7 +129,7 @@ const Footer: React.FC = () => {
       retryTimeoutRef.current = setTimeout(connectServer, 5000);
     };
 
-    ws.onerror = (error) => {
+    ws.onerror = (_error) => {
       // message.error('WebSocket error: ' + error.message);
       setIconColor('inherit'); // Reset icon color on error
       if (heartbeatTimeoutRef.current) {
@@ -163,10 +162,12 @@ const Footer: React.FC = () => {
         background: 'none',
       }}
       copyright={
-        <span>
-          {`${currentYear} ${defaultMessage} `}
-          <AlertOutlined style={{ color: iconColor, fontSize: '20px', fontWeight: 'bold' }} />
-        </span>
+        (
+          <span>
+            {`${currentYear} ${defaultMessage} `}
+            <AlertOutlined style={{ color: iconColor, fontSize: '20px', fontWeight: 'bold' }} />
+          </span>
+        ) as unknown as string
       }
       links={[
         {

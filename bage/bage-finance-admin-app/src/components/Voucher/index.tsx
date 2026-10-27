@@ -1,15 +1,15 @@
-import { PageContainer, ProForm, ProFormText, ProFormSelect, ProFormRadio, ProFormSwitch, ProFormCheckbox } from '@ant-design/pro-components';
+import type { ProColumns } from '@ant-design/pro-components';
 import {
-    Card, Form, Row, Col, Button, Input, Select, Radio, Switch, DatePicker, message,
-    Checkbox, Table, Tag, Space, ConfigProvider, Popconfirm, InputNumber, Tabs, List, Flex,
-    Upload, UploadProps, Divider, Modal
+    Card, Form, Button, Input, Select, DatePicker, message,
+    Table, Space, ConfigProvider, Popconfirm, InputNumber, Tabs, List, Flex,
+    Modal
 } from 'antd';
 import { UploadOutlined, EditOutlined } from '@ant-design/icons';
 import React, { useState, useEffect, useRef } from 'react';
 import { list as listVoucherWordConfig } from '@/services/ant-design-pro/voucherWordConfig';
 import { save, get } from '@/services/ant-design-pro/voucher';
 import { listByCateAndCodeAndName, getSubjectDetail } from '@/services/ant-design-pro/subject';
-import { history, Link } from 'umi';
+import { history, Link } from '@umijs/max';
 import { digitUppercase } from "pixiu-number-toolkit";
 import { list as listCurrencyConfig } from '@/services/ant-design-pro/currencyConfig';
 
@@ -17,59 +17,293 @@ import { list as listAssistCalculateSummary } from '@/services/ant-design-pro/as
 import { currentUser } from '@/services/ant-design-pro/api';
 import FileIndex from '@/components/File/index';
 
-import _ from 'lodash';
-import dayjs from 'dayjs';
-import type { Dayjs } from 'dayjs';
 import moment from 'moment'; // 引入moment库用于处理日期
-import { useLocation } from 'react-router-dom';
 
 
 import './index.less'; // 导入CSS样式
-import { Item } from 'rc-menu';
-import { response } from 'express';
 const { TextArea } = Input;
 const { TabPane } = Tabs;
 
 interface DataType {
     key: number;
+    rKey?: number;
     summary: string;
     subject: any;
-    debitAmount: number;
-    creditAmount: number;
-    subjectBalance: number;
-    newSubjectBalance: number;
+    debitAmount: any;
+    creditAmount: any;
+    subjectBalance: any;
+    newSubjectBalance: any;
 }
 const dateFormat = 'YYYY-MM-DD 00:00:00';
 
 const Voucher: React.FC<any> = (props) => {
     const { p } = props;
-    const [form] = Form.useForm();
-    const inputRef = useRef();
+    const inputRef = useRef<any>(null);
 
     const [isOperate, setIsOperate] = useState(false);
 
-    const [editingKey, setEditingKey] = useState<String>('');
-    const [editingDataIndex, setEditingDataIndex] = useState<String>('');
-    const [subjectData, setSubjectData] = useState([]);
-    const [voucherWordConfigOptions, setVoucherWordConfigOptions] = useState([]);
-    const [currencyConfigOptions, setCurrencyConfigOptions] = useState([]);
-    const [defaultSelectVoucherWordConfigValue, setDefaultSelectVoucherWordConfigValue] = useState();
-    const [assistCalculateOptions, setAssistCalculateOptions] = useState([]);
-    const [voucherNumberValue, setVoucherNumberValue] = useState<String>();
-    const [voucherDateValue, setVoucherDateValue] = useState<String>();
-    const [documentNumValue, setDocumentNumValue] = useState<Number>(0);
+    const [editingKey, setEditingKey] = useState<number | string>('');
+    const [editingDataIndex, setEditingDataIndex] = useState<string>('');
+    const [subjectData, setSubjectData] = useState<any[]>([]);
+    const [voucherWordConfigOptions, setVoucherWordConfigOptions] = useState<any[]>([]);
+    const [, setCurrencyConfigOptions] = useState<any[]>([]);
+    const [defaultSelectVoucherWordConfigValue, setDefaultSelectVoucherWordConfigValue] = useState<{ value?: any; label?: any } | undefined>();
+    const [assistCalculateOptions, setAssistCalculateOptions] = useState<any[]>([]);
+    const [voucherNumberValue, setVoucherNumberValue] = useState<string>();
+    const [voucherDateValue, setVoucherDateValue] = useState<string>();
+    const [documentNumValue, setDocumentNumValue] = useState<number>(0);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const [notesValule, setNotesValule] = useState<string>('');
     const [originalNotesValue, setOriginalNotesValue] = useState(''); // 原始的备注值
     const [isSubmit, setIsSubmit] = useState<boolean>(false);
     const [nickName, setNickName] = useState<string>('');
     const [isFileModalOpen, setIsFileModalOpen] = useState(false);
-    const fileIndexRef = useRef();
+    let [dataSourceRow, setDataSourceRow] = useState<DataType[]>([
+        {
+            key: 1,
+            summary: '',
+            subject: {
+                showName: '',
+                subjectCalculateConfigVo: {
+                    enableNumberCalculateConfig: false,//是否启用数量核算
+                    enableForeignCurrencyConfig: false,//是否启用外币核算
+                    enableAssistCalculateConfigs: false,//是否启用辅助核算
+                    selectAssistCalculateConfigs: []
+                }
+            },
+            debitAmount: 0,
+            creditAmount: 0,
+            subjectBalance: 0,
+            newSubjectBalance: 0
+        },
+        {
+            key: 2,
+            summary: '',
+            subject: {
+                showName: '',
+                subjectCalculateConfigVo: {
+                    enableNumberCalculateConfig: false,//是否启用数量核算
+                    enableForeignCurrencyConfig: false,//是否启用外币核算
+                    enableAssistCalculateConfigs: false,//是否启用辅助核算
+                    selectAssistCalculateConfigs: []
+                }
+            },
+            debitAmount: 0,
+            creditAmount: 0,
+            subjectBalance: 0,
+            newSubjectBalance: 0
+        }
+    ]);
     const [selectFileIds, setSelectFileIds] = useState<number[]>([]);
     const [selectTempFileIds, setSelectTempFileIds] = useState<number[]>([]);
 
 
-    const sharedOnCell = (_: DataType, index: number) => {
+    const [dataSource, setDataSource] = useState<DataType[]>([
+
+    ]);
+
+
+    const [dataSourceFootRow, setDataSourceFootRow] = useState<any>({});
+
+    const totalDataSource = (dataRow: any) => {
+        const totalDebitAmount = dataRow.reduce((sum: number, item: any) => sum + (Number(item.debitAmount) || 0), 0);
+        const totalCreditAmount = dataRow.reduce((sum: number, item: any) => sum + (Number(item.creditAmount) || 0), 0);
+        const chineseSummary = digitUppercase(totalDebitAmount);
+        const footDataRow = {
+            key: 0,
+            summary: chineseSummary,
+            subject: {
+                id: 1,//科目id
+                rKey: 0,
+                code: '',//科目编码
+                name: '',//科目名称
+                showName: '库存现金',//显示的科目名称
+                tmpShowName: '',//修改前的显示的科目名称
+
+                subjectCalculateConfigVo: {
+                    enableNumberCalculateConfig: true,//是否启用数量核算
+                    enableForeignCurrencyConfig: true,//是否启用外币核算
+                    enableAssistCalculateConfigs: true,//是否启用辅助核算
+                    selectForeignCurrencyConfig: {
+                        id: 1,
+                        name: '美金',
+                        exchangeRate: 6.8,
+                        originalCurrency: 0
+                    },
+                    selectNumberCalculateConfig: {
+                        num: 1, // 数量
+                        price: 88, //单价
+                        totalPrice: 88//总价
+                    },
+                    selectAssistCalculateConfigs: [
+                    ],
+                    foreignCurrencyConfig: //外币核算配置
+                        [{
+                            id: 1,
+                            name: '美金',
+                            exchangeRate: 6.8
+                        }]
+                    ,
+                    assistCalculateConfigs: [{
+                        id: 1,//辅助核算类别id
+                        name: '供应商',//辅助核算名称
+                        requiredFlag: true//是否必填
+                    },
+                    {
+                        id: 2,//辅助核算类别id
+                        name: '职员',//辅助核算名称
+                        requiredFlag: true//是否必填
+                    }]
+                }
+            },
+            debitAmount: totalDebitAmount,
+            creditAmount: totalCreditAmount
+        };
+        setDataSourceFootRow(footDataRow);
+        setDataSource([...dataRow, footDataRow]);
+    }
+
+    const handleAdd = (targetKey: number) => {
+        const index = dataSourceRow.findIndex(item => item.key === targetKey);
+        if (index !== -1) {
+            const newData = [...dataSourceRow];
+            const newKey = Number(targetKey) + 1;
+
+            // 更新插入位置后的所有行的key
+            for (let i = index + 1; i < newData.length; i++) {
+                newData[i].key = Number(newData[i].key) + 1;
+            }
+
+            newData.splice(index + 1, 0, {
+                key: newKey,
+                rKey: 0,
+                subjectBalance: 0,
+                newSubjectBalance: 0,
+                summary: '',
+                subject: {
+                    subjectCalculateConfigVo: {
+                        enableNumberCalculateConfig: false,//是否启用数量核算
+                        enableForeignCurrencyConfig: false,//是否启用外币核算
+                        enableAssistCalculateConfigs: false,//是否启用辅助核算
+                        selectAssistCalculateConfigs: []
+                    }
+                },
+                debitAmount: 0,
+                creditAmount: 0
+            });
+            setDataSourceRow(newData);
+            totalDataSource(newData);
+        }
+    };
+
+    const handleDelete = (key: number) => {
+        const newData = dataSourceRow.filter((item) => item.key !== key);
+        if (key <= 2) {
+            message.error("不能删除");
+            return;
+        }
+        // 更新插入位置后的所有行的key
+        for (let i = 0; i < newData.length; i++) {
+            newData[i].key = i + 1;
+        }
+        setDataSourceRow(newData);
+        totalDataSource(newData);
+    };
+
+    const handleCellClick = (record: DataType, dataIndex: string) => {
+        if (record.key === editingKey && dataIndex === editingDataIndex) {
+            return;
+        }
+        if (isOperate) {
+            message.success("请确认会计科目");
+            return;
+        }
+        if (record.key === 0) {
+            return;
+        }
+        if (dataIndex === "subject") {
+            setIsOperate(true);
+            if (record.subject.id) {
+                getSubjectDetail({ "id": record.subject.id }).then(response => {
+                    dataSourceRow.forEach((item, _index) => {
+                        if (record.subject.id === item.subject.id) {
+                            item.subject.subjectCalculateConfigVo.foreignCurrencyConfig = response.data.subjectCalculateConfigVo.foreignCurrencyConfig;
+                            item.subject.subjectCalculateConfigVo.assistCalculateConfigs = response.data.subjectCalculateConfigVo.assistCalculateConfigs;
+                        }
+                    });
+                    totalDataSource(dataSourceRow);
+                });
+            }
+        }
+
+        setEditingKey(record.key);
+        setEditingDataIndex(dataIndex);
+    };
+
+    const cancelEdit = (_record: any) => {
+        setEditingKey('');
+        setEditingDataIndex('');
+        setIsOperate(false);
+        totalDataSource(dataSourceRow);
+    };
+
+    const _saveEditContent = (key: any, dataIndex: any, value: any) => {
+        // 在这里执行保存逻辑，例如更新数据源等操作
+        const newData = dataSourceRow.map((item) => {
+            if (item.key === key) {
+                return { ...item, [dataIndex]: value };
+            }
+            return item;
+        });
+        setDataSourceRow(newData);
+        totalDataSource(newData);
+    };
+
+    const _handleFormatter = (value: string) => {
+        if (value === '') {
+            return '';
+        }
+
+        const numericValue = Number(value);
+
+        if (isNaN(numericValue)) {
+            return '';
+        }
+
+        return numericValue.toFixed(2);
+    };
+
+    const _handleParser = (value: any) => {
+        // 移除非数字字符
+        const numericValue = value.replace(/[^0-9.]/g, '');
+
+        // 转换为数字
+        return parseFloat(numericValue);
+    };
+
+    const formatAmount = (amount: number | string) => {
+        if (amount === 0 || amount === "") {
+            return ["", "", "", "", "", "", "", "", "", "", ""]
+        }
+        const numericAmount = Number(amount);
+        if (isNaN(numericAmount)) {
+            console.error("Invalid amount. Please provide a valid number.");
+            return ["", "", "", "", "", "", "", "", "", "", ""]
+        }
+        const formattedAmount = numericAmount.toFixed(2); // 保留两位小数
+        const amountArray = formattedAmount.replace(".", "").split('');
+        const newAmountArray = Array(11).fill('');
+
+        // 从最后一个元素开始填充
+        for (let i = amountArray.length - 1; i >= 0; i--) {
+            newAmountArray[newAmountArray.length - amountArray.length + i] = amountArray[i];
+        }
+
+        // 遍历索引
+        return newAmountArray;
+    };
+
+    const sharedOnCell = (_: DataType, _index: number) => {
         // 判断是否是最后一行
         if (_.key === 0) {
             return { colSpan: 0 };
@@ -79,7 +313,7 @@ const Voucher: React.FC<any> = (props) => {
     };
     //查询科目列表
     const onListSubject = async (subjectCate: string, codeAndName: string) => {
-        let params = {};
+        let params: Record<string, any> = {};
         if (subjectCate !== "0") {
             params.subjectCate = subjectCate;
         }
@@ -91,7 +325,7 @@ const Voucher: React.FC<any> = (props) => {
         });
     }
     //选择科目事件
-    const onSelectSubject = (record, item) => {
+    const onSelectSubject = (record: any, item: any) => {
         // if (record.subject.id && item.id === record.subject.id) {
         //     totalDataSource(dataSourceRow);
         //     // setIsOperate(false);
@@ -99,7 +333,7 @@ const Voucher: React.FC<any> = (props) => {
         //     return;
         // }
         getSubjectDetail({ "id": item.id }).then(response => {
-            dataSourceRow.map((row) => {
+            dataSourceRow.forEach((row) => {
                 if (row.key === record.key) {
                     row.subject.id = item.id;
                     row.subject.code = item.code;
@@ -134,7 +368,7 @@ const Voucher: React.FC<any> = (props) => {
                     row.subject.subjectCalculateConfigVo.selectAssistCalculateOptions = [];
                     if (response.data.subjectCalculateConfigVo.enableAssistCalculateConfigs) {
                         row.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs = record.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs;
-                        row.subject.subjectCalculateConfigVo.assistCalculateConfigs.map((item1, index1) => {
+                        row.subject.subjectCalculateConfigVo.assistCalculateConfigs.forEach((_item1: any, _index1: number) => {
                             // let option = { label: '', value: '' };
                             row.subject.subjectCalculateConfigVo.selectAssistCalculateOptions.push(null);
                         });
@@ -151,13 +385,12 @@ const Voucher: React.FC<any> = (props) => {
         });
     }
     //确认辅助核算
-    const onSelectAssistCalculate = (record, values) => {
+    const onSelectAssistCalculate = (record: any, values: any) => {
         const showName = record.subject.code + " " + record.subject.fullName;
-        dataSourceRow.map((row) => {
+        dataSourceRow.forEach((row) => {
             if (row.key === record.key) {
                 row.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs = [];
                 row.subject.showName = showName;
-                let index = 0;
                 Object.keys(values).forEach((key) => {
                     const value = values[key];
                     if (value && value.label) {
@@ -171,7 +404,7 @@ const Voucher: React.FC<any> = (props) => {
                             assistCalculateName: value.label,//辅助核算名称
                         });
                     }
-                    index++;
+                    void 0;
                 });
             }
         });
@@ -184,7 +417,7 @@ const Voucher: React.FC<any> = (props) => {
     const onSearchAssistCalculate = (assistCalculateCateId: number, codeOrName: string) => {
         setAssistCalculateOptions([]);
         listAssistCalculateSummary({ assistCalculateCateId: assistCalculateCateId, codeOrName: codeOrName }).then(response => {
-            const dataArray = response.data.list.map(data => ({
+            const dataArray = response.data.list.map((data: any) => ({
                 value: data.id,
                 label: data.code + ' ' + data.name
             }));
@@ -192,9 +425,9 @@ const Voucher: React.FC<any> = (props) => {
         });
     }
     const onValueChange = (record: any, changeField: string) => {
-        dataSourceRow.map((row) => {
+        dataSourceRow.forEach((row) => {
             if (row.key === record.key) {
-                row = record;
+                Object.assign(row, record);
                 //如果数量或单价变化则修改借方金额或贷方金额
                 if (changeField === "num" || changeField === "price") {
                     if (row.creditAmount) {
@@ -311,14 +544,14 @@ const Voucher: React.FC<any> = (props) => {
         totalDataSource(dataSourceRow);
     }
 
-    const columns: TableProps<DataType>['columns'] = [
+    const columns: ProColumns<DataType>[] = [
         {
             title: () => (<div className='pz_title'>摘要</div>),
             dataIndex: 'summary',
             key: 'summary',
             width: 200,
             // ellipsis: true, // Enable ellipsis for this column
-            render: (text, record, _, action) => {
+            render: (text, record, _, _action) => {
                 const isEditing = (record.key === editingKey && "summary" === editingDataIndex);
                 if (record.key === 0) {
                     return (<><div className='heji'>
@@ -335,7 +568,7 @@ const Voucher: React.FC<any> = (props) => {
                                         const value = e.target.value;
                                         e.target.setSelectionRange(value.length, value.length);
                                     }}
-                                    defaultValue={text}
+                                    defaultValue={text as any}
                                     onChange={(e) => {
                                         record.summary = e.target.value;
                                     }}
@@ -349,7 +582,7 @@ const Voucher: React.FC<any> = (props) => {
                     </>
                 );
             },
-            onCell: (_, index) => ({
+            onCell: (_, _index) => ({
                 // 判断是否是最后一行
                 colSpan: _.key === 0 ? 2 : 1,
             }),
@@ -364,7 +597,7 @@ const Voucher: React.FC<any> = (props) => {
             dataIndex: 'subject',
             key: 'subject',
             width: 400,
-            render: (text, record, _, action) => {
+            render: (text, record, _, _action) => {
                 const isEditing = (record.key === editingKey && "subject" === editingDataIndex);
                 let height = 70;
                 //是否有余额
@@ -434,13 +667,13 @@ const Voucher: React.FC<any> = (props) => {
                                                                 value={record.subject.subjectCalculateConfigVo.selectForeignCurrencyConfig.id}
                                                                 // options={currencyConfigOptions}
                                                                 options={
-                                                                    record.subject.subjectCalculateConfigVo.foreignCurrencyConfig.map(d => ({
+                                                                    record.subject.subjectCalculateConfigVo.foreignCurrencyConfig.map((d: any) => ({
                                                                         value: d.id,
                                                                         label: d.name
                                                                     }))
                                                                 }
                                                                 onChange={(e) => {
-                                                                    record.subject.subjectCalculateConfigVo.foreignCurrencyConfig.map(d => {
+                                                                    record.subject.subjectCalculateConfigVo.foreignCurrencyConfig.forEach((d: any) => {
                                                                         if (d.id === e) {
                                                                             const originalCurrency = record.subject.subjectCalculateConfigVo.selectForeignCurrencyConfig.originalCurrency;
                                                                             record.subject.subjectCalculateConfigVo.selectForeignCurrencyConfig = d;
@@ -613,10 +846,10 @@ const Voucher: React.FC<any> = (props) => {
                                                         borderBottom: '1px solid rgba(140, 140, 140, 0.35)',
                                                         borderLeft: '3px solid #44b449'
                                                     }} headStyle={{ height: 20 }}>
-                                                        {record.subject.subjectCalculateConfigVo.assistCalculateConfigs.map((item, index) => {
+                                                        {record.subject.subjectCalculateConfigVo.assistCalculateConfigs.map((item: any, _index: number) => {
                                                             let selectAssistCalculateOptions;
                                                             if (record.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs) {
-                                                                record.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs.map((item2, index2) => {
+                                                                record.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs.forEach((item2: any, _index2: number) => {
                                                                     if (record.subject.id === item2.subjectId && item.id === item2.assistCalculateCateId) {
                                                                         selectAssistCalculateOptions = {
                                                                             assistCalculateCateId: item2.assistCalculateCateId,
@@ -629,9 +862,9 @@ const Voucher: React.FC<any> = (props) => {
 
                                                             return (
                                                                 <Form.Item
+                                                                    key={record.rKey + "_" + item.id}
                                                                     labelCol={{ span: 6 }}  // 根据需要调整标签所占列数
                                                                     wrapperCol={{ span: 18 }} // 根据需要调整表单项所占列数
-                                                                    // key={record.rKey + "_" + item.id}
                                                                     label={item.name}
                                                                     name={"a_" + record.subject.id + "_" + item.id}
                                                                     rules={[
@@ -714,7 +947,7 @@ const Voucher: React.FC<any> = (props) => {
                     </>
                 );
             },
-            onCell: sharedOnCell,
+            onCell: sharedOnCell as any,
         },
         {
             title: () => (<div className='pz_title'>借方金额</div>),
@@ -724,7 +957,6 @@ const Voucher: React.FC<any> = (props) => {
             width: 220,
             children: [
                 {
-                    height: 100,
                     width: 220,
                     title: (<div className='custom-border th'>
                         <span>亿</span>
@@ -742,7 +974,7 @@ const Voucher: React.FC<any> = (props) => {
                     dataIndex: 'debitAmount',
                     key: 'debitAmount',
                     align: 'center', // 设置表头居中
-                    render: (text, record, _, action) => {
+                    render: (text, record, _, _action) => {
                         const isEditing = (record.key === editingKey && "debitAmount" === editingDataIndex);
                         const amount = formatAmount(record.debitAmount >= 0 ? record.debitAmount : -record.debitAmount);
 
@@ -800,7 +1032,6 @@ const Voucher: React.FC<any> = (props) => {
             children: [
                 {
                     width: 220,
-                    height: 100,
                     title: (<div className='custom-border th'>
                         <span>亿</span>
                         <span>千</span>
@@ -817,7 +1048,7 @@ const Voucher: React.FC<any> = (props) => {
                     dataIndex: 'creditAmount',
                     key: 'creditAmount',
                     align: 'center', // 设置表头居中
-                    render: (text, record, _, action) => {
+                    render: (text, record, _, _action) => {
                         const isEditing = (record.key === editingKey && "creditAmount" === editingDataIndex);
                         const amount = formatAmount(record.creditAmount >= 0 ? record.creditAmount : -record.creditAmount);
 
@@ -862,7 +1093,6 @@ const Voucher: React.FC<any> = (props) => {
                             </>
                         );
                     },
-                    width: 190,
                 }]
         },
         {
@@ -870,7 +1100,7 @@ const Voucher: React.FC<any> = (props) => {
             valueType: 'option',
             key: 'option',
             width: 80,
-            render: (text, record, _, action) => {
+            render: (text, record, _, _action) => {
                 const isLastRow = _ === dataSource.length - 1;
                 if (isLastRow) {
                     return;
@@ -892,212 +1122,20 @@ const Voucher: React.FC<any> = (props) => {
         },
     ];
 
-    const [dataSource, setDataSource] = useState<DataType[]>([
-
-    ]);
-
-    let [dataSourceRow, setDataSourceRow] = useState<DataType[]>([
-        {
-            key: 1,
-            summary: '',
-            subject: {
-                showName: '',
-                subjectCalculateConfigVo: {
-                    enableNumberCalculateConfig: false,//是否启用数量核算
-                    enableForeignCurrencyConfig: false,//是否启用外币核算
-                    enableAssistCalculateConfigs: false,//是否启用辅助核算
-                    selectAssistCalculateConfigs: []
-                }
-            },
-            debitAmount: 0,
-            creditAmount: 0,
-            subjectBalance: 0,
-            newSubjectBalance: 0
-        },
-        {
-            key: 2,
-            summary: '',
-            subject: {
-                showName: '',
-                subjectCalculateConfigVo: {
-                    enableNumberCalculateConfig: false,//是否启用数量核算
-                    enableForeignCurrencyConfig: false,//是否启用外币核算
-                    enableAssistCalculateConfigs: false,//是否启用辅助核算
-                    selectAssistCalculateConfigs: []
-                }
-            },
-            debitAmount: 0,
-            creditAmount: 0,
-            subjectBalance: 0,
-            newSubjectBalance: 0
-        }
-    ]);
-
-    // 在需要深拷贝的地方使用 cloneDeep 函数
-    const clonedDataSourceRow = _.cloneDeep(dataSourceRow);
-
-    const [dataSourceFootRow, setDataSourceFootRow] = useState<DataType[]>([
-    ]);
 
 
-    const totalDataSource = (dataRow: any) => {
-        const totalDebitAmount = dataRow.reduce((sum, item) => sum + (Number(item.debitAmount) || 0), 0);
-        const totalCreditAmount = dataRow.reduce((sum, item) => sum + (Number(item.creditAmount) || 0), 0);
-        const chineseSummary = digitUppercase(totalDebitAmount);
-        const footDataRow = {
-            key: 0,
-            summary: chineseSummary,
-            subject: {
-                id: 1,//科目id
-                rKey: 0,
-                code: '',//科目编码
-                name: '',//科目名称
-                showName: '库存现金',//显示的科目名称
-                tmpShowName: '',//修改前的显示的科目名称
-
-                subjectCalculateConfigVo: {
-                    enableNumberCalculateConfig: true,//是否启用数量核算
-                    enableForeignCurrencyConfig: true,//是否启用外币核算
-                    enableAssistCalculateConfigs: true,//是否启用辅助核算
-                    selectForeignCurrencyConfig: {
-                        id: 1,
-                        name: '美金',
-                        exchangeRate: 6.8,
-                        originalCurrency: 0
-                    },
-                    selectNumberCalculateConfig: {
-                        num: 1, // 数量
-                        price: 88, //单价
-                        totalPrice: 88//总价
-                    },
-                    selectAssistCalculateConfigs: [
-                    ],
-                    foreignCurrencyConfig: //外币核算配置
-                        [{
-                            id: 1,
-                            name: '美金',
-                            exchangeRate: 6.8
-                        }]
-                    ,
-                    assistCalculateConfigs: [{
-                        id: 1,//辅助核算类别id
-                        name: '供应商',//辅助核算名称
-                        requiredFlag: true//是否必填
-                    },
-                    {
-                        id: 2,//辅助核算类别id
-                        name: '职员',//辅助核算名称
-                        requiredFlag: true//是否必填
-                    }]
-                }
-            },
-            debitAmount: totalDebitAmount,
-            creditAmount: totalCreditAmount
-        };
-        setDataSourceFootRow(footDataRow);
-        setDataSource([...dataRow, footDataRow]);
-    }
     //新增凭证明细
-    const handleAdd = (targetKey: number) => {
-        const index = dataSourceRow.findIndex(item => item.key === targetKey);
-        if (index !== -1) {
-            const newData = [...dataSourceRow];
-            const newKey = Number(targetKey) + 1;
 
-            // 更新插入位置后的所有行的key
-            for (let i = index + 1; i < newData.length; i++) {
-                newData[i].key = Number(newData[i].key) + 1;
-            }
-
-            newData.splice(index + 1, 0, {
-                key: newKey,
-                rKey: 0,
-                summary: '',
-                subject: {
-                    subjectCalculateConfigVo: {
-                        enableNumberCalculateConfig: false,//是否启用数量核算
-                        enableForeignCurrencyConfig: false,//是否启用外币核算
-                        enableAssistCalculateConfigs: false,//是否启用辅助核算
-                        selectAssistCalculateConfigs: []
-                    }
-                },
-                debitAmount: 0,
-                creditAmount: 0
-            });
-            setDataSourceRow(newData);
-            totalDataSource(newData);
-        }
-    };
-
-    const handleDelete = (key: React.Key) => {
-        const newData = dataSourceRow.filter((item) => item.key !== key);
-        if (key <= 2) {
-            message.error("不能删除");
-            return;
-        }
-        // 更新插入位置后的所有行的key
-        for (let i = 0; i < newData.length; i++) {
-            newData[i].key = i + 1;
-        }
-        setDataSourceRow(newData);
-        totalDataSource(newData);
-    };
-    const handleCellClick = (record: DataType, dataIndex: string) => {
-        if (record.key === editingKey && dataIndex === editingDataIndex) {
-            return;
-        }
-        if (isOperate) {
-            message.success("请确认会计科目");
-            return;
-        }
-        if (record.key === 0) {
-            return;
-        }
-        if (dataIndex === "subject") {
-            setIsOperate(true);
-            if (record.subject.id) {
-                getSubjectDetail({ "id": record.subject.id }).then(response => {
-                    dataSourceRow.map((item, index) => {
-                        if (record.subject.id === item.subject.id) {
-                            item.subject.subjectCalculateConfigVo.foreignCurrencyConfig = response.data.subjectCalculateConfigVo.foreignCurrencyConfig;
-                            item.subject.subjectCalculateConfigVo.assistCalculateConfigs = response.data.subjectCalculateConfigVo.assistCalculateConfigs;
-                        }
-                    });
-                    totalDataSource(dataSourceRow);
-                });
-            }
-        }
-
-        setEditingKey(record.key);
-        setEditingDataIndex(dataIndex);
-    };
     // 取消编辑的处理函数
-    const cancelEdit = (record: any) => {
-        setEditingKey('');
-        setEditingDataIndex('');
-        setIsOperate(false);
-        totalDataSource(dataSourceRow);
-    };
-    const saveEditContent = (key, dataIndex, value) => {
-        // 在这里执行保存逻辑，例如更新数据源等操作
-        const newData = dataSourceRow.map((item) => {
-            if (item.key === key) {
-                return { ...item, [dataIndex]: value };
-            }
-            return item;
-        });
-        setDataSourceRow(newData);
-        totalDataSource(newData);
-    };
     //创建凭证
-    const createVoucher = async (type: number) => {
+    const createVoucher = async (_type: number) => {
         if (isOperate) {
             message.error("请确认科目");
             return;
         }
-        let params = {
+        let params: any = {
             id: p.id,
-            voucherWordConfigId: defaultSelectVoucherWordConfigValue.value,//凭证字
+            voucherWordConfigId: defaultSelectVoucherWordConfigValue?.value,//凭证字
             voucherNumber: voucherNumberValue,//凭证号
             voucherDate: voucherDateValue,//凭证日期
             documentNum: documentNumValue,//单据数量
@@ -1107,7 +1145,7 @@ const Voucher: React.FC<any> = (props) => {
             voucherSubjectAssistCalculateDetailFormList: [],//辅助核算明细
             fileIds: selectFileIds
         };
-        if (!defaultSelectVoucherWordConfigValue.value) {
+        if (!defaultSelectVoucherWordConfigValue?.value) {
             message.error("请选择凭证字");
             return;
         }
@@ -1218,7 +1256,7 @@ const Voucher: React.FC<any> = (props) => {
 
                 //设置辅助核算明细
                 if (item.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs) {
-                    item.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs.map((item2, index2) => {
+                    item.subject.subjectCalculateConfigVo.selectAssistCalculateConfigs.forEach((item2: any, _index2: number) => {
                         if (item2) {
                             const voucherSubjectAssistCalculateDetailForm = {
                                 rowNo: voucherSubjectDetailForm.rowNo,
@@ -1252,65 +1290,24 @@ const Voucher: React.FC<any> = (props) => {
                 else {
                     message.error("创建失败");
                 }
-            }).catch(error => {
+            }).catch(_error => {
             }).finally(() => {
                 setIsSubmit(false);
             });
         } catch (error) {
             console.log(error)
-            message.error(error.message);
+            message.error((error as Error).message);
         }
     };
-    const handleFormatter = (value: string) => {
-        if (value === '') {
-            return '';
-        }
 
-        const numericValue = Number(value);
 
-        if (isNaN(numericValue)) {
-            return '';
-        }
-
-        return numericValue.toFixed(2);
-    };
-
-    const handleParser = (value) => {
-        // 移除非数字字符
-        const numericValue = value.replace(/[^0-9.]/g, '');
-
-        // 转换为数字
-        return parseFloat(numericValue);
-    };
-
-    const formatAmount = (amount: number) => {
-        if (amount === 0 || amount === "") {
-            return ["", "", "", "", "", "", "", "", "", "", ""]
-        }
-        const numericAmount = Number(amount);
-        if (isNaN(numericAmount)) {
-            console.error("Invalid amount. Please provide a valid number.");
-            return ["", "", "", "", "", "", "", "", "", "", ""]
-        }
-        const formattedAmount = numericAmount.toFixed(2); // 保留两位小数
-        const amountArray = formattedAmount.replace(".", "").split('');
-        const newAmountArray = Array(11).fill('');
-
-        // 从最后一个元素开始填充
-        for (let i = amountArray.length - 1; i >= 0; i--) {
-            newAmountArray[newAmountArray.length - amountArray.length + i] = amountArray[i];
-        }
-
-        // 遍历索引
-        return newAmountArray;
-    };
 
     //获取凭证字列表
     const fetchVoucherWordConfigData = async () => {
         try {
             await listVoucherWordConfig().then(response => {
                 if (response.data) {
-                    const dataArray = response.data.map(data => ({
+                    const dataArray = response.data.map((data: any) => ({
                         value: data.id,
                         label: data.voucherWord
                     }));
@@ -1319,7 +1316,7 @@ const Voucher: React.FC<any> = (props) => {
                         setDefaultSelectVoucherWordConfigValue(dataArray[0])
                     }
                 }
-            }).catch(error => {
+            }).catch(_error => {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -1330,7 +1327,7 @@ const Voucher: React.FC<any> = (props) => {
         try {
             await listCurrencyConfig().then(response => {
                 if (response.data) {
-                    const dataArray = response.data.map(data => ({
+                    const dataArray = response.data.map((data: any) => ({
                         value: data.code,
                         label: data.name
                     }));
@@ -1339,7 +1336,7 @@ const Voucher: React.FC<any> = (props) => {
                         // setDefaultSelectVoucherWordConfigValue(dataArray[0].label)
                     }
                 }
-            }).catch(error => {
+            }).catch(_error => {
             });
         } catch (error) {
             console.error('Error fetching data:', error);
@@ -1356,7 +1353,7 @@ const Voucher: React.FC<any> = (props) => {
     }
     const getNickName = async () => {
         await currentUser().then((response) => {
-            setNickName(response.data.name);
+            setNickName(response.data.name ?? '');
         }).catch(e => {
             console.log(e);
         })
@@ -1423,7 +1420,7 @@ const Voucher: React.FC<any> = (props) => {
             const id = p.id > 0 ? p.id : p.copyId;
             get({ id: id }).then((response) => {
                 let newDataSourceRow: any = [];
-                response.data.voucherSubjectDetailVoList.map((item, index) => {
+                response.data.voucherSubjectDetailVoList.forEach((item: any, index: number) => {
                     let row = {
                         key: index + 1,
                         summary: item.summary,//摘要
@@ -1440,7 +1437,7 @@ const Voucher: React.FC<any> = (props) => {
                                 enableForeignCurrencyConfig: item.enableForeignCurrencyConfig,//是否启用外币核算
                                 enableAssistCalculateConfigs: item.enableAssistCalculateConfigs,//是否启用辅助核算
                                 selectAssistCalculateConfigs: item.assistCalculateConfigs//选择的辅助核算
-                            }
+                            } as any
                         },
                         subjectBalance: item.balance,
                         newSubjectBalance: item.balance,
@@ -1520,7 +1517,7 @@ const Voucher: React.FC<any> = (props) => {
             >
                 <Table
                     className="voucher"
-                    columns={columns}
+                    columns={columns as any}
                     dataSource={dataSource}
                     bordered size="small"
                     pagination={false}
@@ -1562,7 +1559,7 @@ const Voucher: React.FC<any> = (props) => {
                                         <Input style={{ width: 100 }}
                                             value={documentNumValue}
                                             addonAfter="张"
-                                            onChange={(event) => setDocumentNumValue(event.target.value)}
+                                            onChange={(event) => setDocumentNumValue(Number(event.target.value))}
                                         ></Input>
                                     </Form.Item>
                                     <Space>
