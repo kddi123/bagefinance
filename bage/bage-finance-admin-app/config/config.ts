@@ -148,9 +148,7 @@ export default defineConfig({
       projectName: 'swagger',
     },
   ],
-  mfsu: {
-    strategy: 'normal',
-  },
+  mfsu: false, // 临时禁用以加快调试
   esbuildMinifyIIFE: true,
   requestRecord: {},
 });
