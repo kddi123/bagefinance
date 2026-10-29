@@ -117,32 +117,105 @@ export default {
       address: 'Sidney No. 1 Lake Park',
     },
   ],
-  'POST /api/login/account': async (req: Request, res: Response) => {
-    const { password, username, type } = req.body;
-    await waitTime(2000);
+  'GET /api/login/account': (req: Request, res: Response) => {
+    const { username, password, type = 'account' } = req.query;
+
+    console.log('[Mock GET /api/login/account]', { username, password, type });
+
+    // 仅用于测试，生产环境不应使用 GET 登录（密码会暴露在 URL 中）
     if (password === 'ant.design' && username === 'admin') {
       res.send({
+        success: true,
         status: 'ok',
         type,
         currentAuthority: 'admin',
+        token: 'mock-admin-token-' + Date.now(),
+        userId: '00000001',
+        username: 'admin',
+        nickname: 'Admin User',
+        roles: ['admin', 'user'],
+        permissions: ['*'],
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
+      });
+      access = 'admin';
+      return;
+    }
+
+    if (password === 'ant.design' && username === 'user') {
+      res.send({
+        success: true,
+        status: 'ok',
+        type,
+        currentAuthority: 'user',
+        token: 'mock-user-token-' + Date.now(),
+        userId: '00000002',
+        username: 'user',
+        nickname: 'Normal User',
+        roles: ['user'],
+        permissions: ['read', 'write'],
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
+      });
+      access = 'user';
+      return;
+    }
+
+    res.status(401).send({
+      success: false,
+      errorMessage: '用户名或密码错误（GET 方法仅用于测试，生产环境请使用 POST）',
+    });
+  },
+  'POST /api/login/account': async (req: Request, res: Response) => {
+    // 同时支持 Body 和 Query Params（生产环境只用 Body）
+    const { password, username, type } = req.body.username ? req.body : req.query;
+    console.log('[Mock POST /api/login/account]', { username, password, type, source: req.body.username ? 'body' : 'query' });
+    // await waitTime(2000); // 暂时注释以便测试
+    if (password === 'ant.design' && username === 'admin') {
+      res.status(200).send({
+        success: true,
+        status: 'ok',
+        type,
+        currentAuthority: 'admin',
+        token: 'mock-admin-token-' + new Date().toISOString(),  // ← Date.now() 就是时间戳数字
+        userId: '00000001',
+        username: 'admin',
+        nickname: 'Admin User',
+        roles: ['admin', 'user'],
+        permissions: ['*'],
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       });
       access = 'admin';
       return;
     }
     if (password === 'ant.design' && username === 'user') {
       res.send({
+        success: true,
         status: 'ok',
         type,
         currentAuthority: 'user',
+        token: 'mock-user-token-' + Date.now(),
+        userId: '00000002',
+        username: 'user',
+        nickname: 'Normal User',
+        roles: ['user'],
+        permissions: ['read', 'write'],
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/efFD%24IOql2/weixintupian_20170331104822.jpg',
       });
       access = 'user';
       return;
     }
     if (type === 'mobile') {
       res.send({
+        success: true,
         status: 'ok',
         type,
         currentAuthority: 'admin',
+        token: 'mock-mobile-token-' + Date.now(),
+        userId: '00000003',
+        username: username,
+        nickname: '手机用户',
+        roles: ['admin'],
+        permissions: ['*'],
+        avatar: 'https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png',
       });
       access = 'admin';
       return;
